@@ -1,5 +1,4 @@
 <?php
-// app/controllers/UserController.php
 
 class UserController extends Controller
 {
@@ -8,16 +7,26 @@ class UserController extends Controller
 
   public function __construct()
   {
+    require_once '../app/middleware/AuthMiddleware.php';
+    AuthMiddleware::handle();
+
     $this->userModel = $this->model('User');
   }
 
   public function index()
   {
+    $auth = new Auth();
+    if ($auth->check()) {
+      // Get user object
+      $user = $auth->user();
+      echo $user->full_name;
+    }
     $users = $this->userModel->getAllUsers();
 
     $data = [
       'title' => 'Users',
-      'users' => $users
+      'users' => $users,
+      'user' => $user
     ];
 
     $this->view('user/index', $data);

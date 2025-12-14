@@ -1,5 +1,4 @@
 <?php
-// app/controllers/HomeController.php
 
 class HomeController extends Controller
 {

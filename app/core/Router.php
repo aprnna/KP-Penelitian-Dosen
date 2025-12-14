@@ -1,5 +1,4 @@
 <?php
-// app/core/Router.php
 
 class Router
 {

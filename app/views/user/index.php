@@ -8,6 +8,11 @@
 </head>
 
 <body>
+
+  <h1>User Login: <?php echo htmlspecialchars($user->full_name); ?></h1>
+  <form action="<?php echo BASE_URL; ?>auth/logout" method="POST">
+    <button type="submit">Logout</button>
+  </form>
   <h1>User List</h1>
 
   <?php if (!empty($users)): ?>
