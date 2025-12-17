@@ -41,15 +41,3 @@
     Login dengan Google
   </a>
 </div>
-
-<div class="position-relative my-4">
-  <hr>
-  <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">atau sign up dengan</span>
-</div>
-
-<div class="d-grid gap-2">
-  <a href="<?php echo BASE_URL; ?>auth/google/register" class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2">
-    <i class="bi bi-google"></i>
-    Sign Up dengan Google
-  </a>
-</div>
