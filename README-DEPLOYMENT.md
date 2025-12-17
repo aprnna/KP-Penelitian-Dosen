@@ -161,6 +161,62 @@ docker-compose exec -T db mysql -u root -p sister < backup.sql
 
 ---
 
+## 🔄 CI/CD dengan GitHub Actions
+
+### Setup Secrets di GitHub
+
+1. Buka repository di GitHub
+2. Ke **Settings** → **Secrets and variables** → **Actions**
+3. Tambahkan secrets berikut:
+
+| Secret Name | Deskripsi | Contoh |
+|-------------|-----------|--------|
+| `VPS_HOST` | IP atau domain VPS | `103.xxx.xxx.xxx` |
+| `VPS_USERNAME` | Username SSH | `root` atau `ubuntu` |
+| `VPS_SSH_KEY` | Private SSH key | (isi full private key) |
+| `VPS_PORT` | Port SSH | `22` |
+| `VPS_PROJECT_PATH` | Path project di VPS | `/var/www/kp-penelitian-dosen` |
+| `DB_USER` | Username database | `root` |
+| `DB_PASS` | Password database | `your-strong-password` |
+| `DB_NAME` | Nama database | `kp-penelitian-dosen` |
+| `APP_NAME` | Nama aplikasi | `KP Penelitian Dosen` |
+| `BASE_URL` | URL aplikasi | `https://yourdomain.com/` |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID | `xxx.apps.googleusercontent.com` |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Secret | `GOCSPX-xxx` |
+| `GOOGLE_REDIRECT_URI` | Google OAuth Callback | `https://yourdomain.com/auth/google/callback` |
+
+### Generate SSH Key untuk Deployment
+
+```bash
+# Di local machine, generate key khusus untuk deploy
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/github_deploy_key
+
+# Copy public key ke VPS
+ssh-copy-id -i ~/.ssh/github_deploy_key.pub user@your-vps-ip
+
+# Isi VPS_SSH_KEY secret dengan isi dari:
+cat ~/.ssh/github_deploy_key
+```
+
+### Cara Kerja
+
+1. Push ke branch `main` atau `master` → otomatis deploy
+2. Atau trigger manual via **Actions** → **Deploy to VPS** → **Run workflow**
+
+### Setup Awal di VPS
+
+```bash
+# Clone repository pertama kali
+cd /var/www
+git clone https://github.com/username/KP-Penelitian-Dosen.git
+cd KP-Penelitian-Dosen
+
+# Setup Docker (jika belum)
+docker-compose up -d --build
+```
+
+---
+
 ## ⚠️ Troubleshooting
 
 ### Container tidak bisa start
