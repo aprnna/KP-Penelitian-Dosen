@@ -9,16 +9,8 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80"
-    environment:
-      - DB_HOST=db
-      - DB_USER=${DB_USER:-root}
-      - DB_PASS=${DB_PASS:-secret}
-      - DB_NAME=${DB_NAME:-sister}
-      - APP_NAME=${APP_NAME:-MVC Application}
-      - BASE_URL=${BASE_URL:-http://localhost:8080/}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
-      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-http://localhost:8080/auth/google/callback}
+    env_file:
+      - .env
     volumes:
       - .:/var/www/html
     depends_on:
@@ -35,7 +27,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASS:-secret}
-      MYSQL_DATABASE: ${DB_NAME:-sister}
+      MYSQL_DATABASE: ${DB_NAME:-kp-penelitian-dosen}
     volumes:
       - db_data:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d

@@ -104,7 +104,7 @@ class Router
 
     // Remove base path if exists
     $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
-    if (strpos($uri, $basePath) === 0) {
+    if (!empty($basePath) && strpos($uri, $basePath) === 0) {
       $uri = substr($uri, strlen($basePath));
     }
 
