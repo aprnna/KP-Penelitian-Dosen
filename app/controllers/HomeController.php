@@ -7,9 +7,12 @@ class HomeController extends Controller
   {
     $data = [
       'title' => 'Home Page',
-      'message' => 'Welcome to MVC Framework'
+      'message' => 'Welcome to MVC Framework',
+      'showNavbar' => true,
+      'showFooter' => true,
+      'currentPage' => 'home'
     ];
 
-    $this->view('home/index', $data);
+    $this->render('home/index', $data, 'main');
   }
 }

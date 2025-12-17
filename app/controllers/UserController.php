@@ -16,46 +16,72 @@ class UserController extends Controller
   public function index()
   {
     $auth = new Auth();
+    $user = null;
+    
     if ($auth->check()) {
-      // Get user object
       $user = $auth->user();
-      echo $user->full_name;
     }
+    
     $users = $this->userModel->getAllUsers();
 
     $data = [
       'title' => 'Users',
       'users' => $users,
-      'user' => $user
+      'user' => $user,
+      'showNavbar' => true,
+      'showFooter' => true,
+      'currentPage' => 'user'
     ];
 
-    $this->view('user/index', $data);
+    $this->render('user/index', $data, 'main');
   }
 
   public function detail($id)
   {
-    $user = $this->userModel->getUserById($id);
+    $auth = new Auth();
+    $user = null;
+    
+    if ($auth->check()) {
+      $user = $auth->user();
+    }
 
-    if (!$user) {
+    $detailUser = $this->userModel->getUserById($id);
+
+    if (!$detailUser) {
       $this->redirect('user');
       return;
     }
 
     $data = [
       'title' => 'User Detail',
-      'user' => $user
+      'detailUser' => $detailUser,
+      'user' => $user,
+      'showNavbar' => true,
+      'showFooter' => true,
+      'currentPage' => 'user'
     ];
 
-    $this->view('user/detail', $data);
+    $this->render('user/detail', $data, 'main');
   }
 
   public function create()
   {
+    $auth = new Auth();
+    $user = null;
+    
+    if ($auth->check()) {
+      $user = $auth->user();
+    }
+
     $data = [
-      'title' => 'Create User'
+      'title' => 'Create User',
+      'user' => $user,
+      'showNavbar' => true,
+      'showFooter' => true,
+      'currentPage' => 'user'
     ];
 
-    $this->view('user/create', $data);
+    $this->render('user/create', $data, 'main');
   }
 
   public function store()
@@ -76,19 +102,30 @@ class UserController extends Controller
 
   public function edit($id)
   {
-    $user = $this->userModel->getUserById($id);
+    $auth = new Auth();
+    $user = null;
+    
+    if ($auth->check()) {
+      $user = $auth->user();
+    }
 
-    if (!$user) {
+    $editUser = $this->userModel->getUserById($id);
+
+    if (!$editUser) {
       $this->redirect('user');
       return;
     }
 
     $data = [
       'title' => 'Edit User',
-      'user' => $user
+      'editUser' => $editUser,
+      'user' => $user,
+      'showNavbar' => true,
+      'showFooter' => true,
+      'currentPage' => 'user'
     ];
 
-    $this->view('user/edit', $data);
+    $this->render('user/edit', $data, 'main');
   }
 
   public function update($id)

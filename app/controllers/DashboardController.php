@@ -15,19 +15,23 @@ class DashboardController extends Controller
   public function index()
   {
     $auth = new Auth();
+    $user = null;
+    
     if ($auth->check()) {
-      // Get user object
       $user = $auth->user();
-      echo $user->full_name;
     }
+    
     $users = $this->userModel->getAllUsers();
 
     $data = [
       'title' => 'Dashboard',
       'users' => $users,
-      'user' => $user
+      'user' => $user,
+      'showNavbar' => true,
+      'showFooter' => true,
+      'currentPage' => 'dashboard'
     ];
 
-    $this->view('dashboard/index', $data);
+    $this->render('dashboard/index', $data, 'main');
   }
 }

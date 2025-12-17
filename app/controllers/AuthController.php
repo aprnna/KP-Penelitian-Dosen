@@ -20,7 +20,7 @@ class AuthController extends Controller
       return;
     }
 
-    $this->view('auth/login', ['title' => 'Login']);
+    $this->render('auth/login', ['title' => 'Login'], 'auth');
   }
 
   public function doLogin()
@@ -52,7 +52,7 @@ class AuthController extends Controller
       return;
     }
 
-    $this->view('auth/register', ['title' => 'Register']);
+    $this->render('auth/register', ['title' => 'Register'], 'auth');
   }
 
   public function doRegister()
