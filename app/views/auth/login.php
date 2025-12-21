@@ -74,8 +74,6 @@
   }
 </style>
 
-<!-- Header -->
-
 <!-- Alert Messages -->
 <?php if (isset($_SESSION['error'])): ?>
   <div class="alert alert-danger alert-dismissible fade show" role="alert">

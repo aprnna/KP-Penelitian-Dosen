@@ -40,7 +40,7 @@
       <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5 col-xl-4">
           <div class="login-header">
-            <img src="<?php echo BASE_URL; ?>logo_unikom2.png" alt="Logo UNIKOM">
+            <img src="<?php echo BASE_URL; ?>logo_unikom_only.png" alt="Logo UNIKOM">
             <span>Visualisasi Penelitian</span>
           </div>
           <div class="card shadow-sm border-0">
