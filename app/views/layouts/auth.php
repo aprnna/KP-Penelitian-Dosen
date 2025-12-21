@@ -10,12 +10,39 @@
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
+<style>
+  .login-header {
+    background: #357CA5;
+    border-radius: 5px;
+    padding: 0.75rem 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  .login-header img {
+    height: 40px;
+    width: auto;
+  }
+
+  .login-header span {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+</style>
 
 <body class="bg-light">
   <div class="min-vh-100 d-flex justify-content-center align-items-center py-4">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5 col-xl-4">
+          <div class="login-header">
+            <img src="<?php echo BASE_URL; ?>logo_unikom2.png" alt="Logo UNIKOM">
+            <span>Visualisasi Penelitian</span>
+          </div>
           <div class="card shadow-sm border-0">
             <div class="card-body p-4 p-md-5">
               <?php require_once '../app/views/' . $viewContent . '.php'; ?>
