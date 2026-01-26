@@ -1,0 +1,113 @@
+/* Custom Bootstrap Primary Color Override */
+/* Warna biru lebih gelap untuk semua komponen primary */
+
+/* Global Font Family - Segoe UI untuk seluruh aplikasi */
+* {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+/* Button Primary - Tombol dengan class btn-primary */
+.btn-primary {
+  background-color: #0066cc !important;
+  border-color: #0066cc !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3 !important;
+  border-color: #0056b3 !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:active,
+.btn-primary:focus,
+.btn-primary.active {
+  background-color: #004494 !important;
+  border-color: #004494 !important;
+  color: #ffffff !important;
+}
+
+/* Text Primary - Teks dengan class text-primary */
+.text-primary {
+  color: #0066cc !important;
+}
+
+/* Background Primary - Background dengan class bg-primary */
+.bg-primary {
+  background-color: #0066cc !important;
+}
+
+/* Border Primary */
+.border-primary {
+  border-color: #0066cc !important;
+}
+
+/* Alert Primary */
+.alert-primary {
+  background-color: #cce5ff !important;
+  border-color: #99ccff !important;
+  color: #004494 !important;
+}
+
+/* Badge Primary */
+.badge.bg-primary {
+  background-color: #0066cc !important;
+}
+
+/* Link Primary */
+.link-primary {
+  color: #0066cc !important;
+}
+
+.link-primary:hover {
+  color: #0056b3 !important;
+}
+
+/* Form Controls Focus */
+.form-control:focus,
+.form-select:focus {
+  border-color: #0066cc !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 102, 204, 0.25) !important;
+}
+
+/* Checkbox dan Radio */
+.form-check-input:checked {
+  background-color: #0066cc !important;
+  border-color: #0066cc !important;
+}
+
+/* Progress Bar */
+.progress-bar {
+  background-color: #0066cc !important;
+}
+
+/* List Group Active */
+.list-group-item.active {
+  background-color: #0066cc !important;
+  border-color: #0066cc !important;
+}
+
+/* Pagination */
+.page-link {
+  color: #0066cc;
+}
+
+.page-link:hover {
+  color: #0056b3 !important;
+  background-color: #e6f2ff !important;
+}
+
+.page-item.active .page-link {
+  background-color: #0066cc !important;
+  border-color: #0066cc !important;
+  color: #ffffff !important;
+}
+
+/* Nav Pills */
+.nav-pills .nav-link.active {
+  background-color: #0066cc !important;
+}

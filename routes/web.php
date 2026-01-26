@@ -4,6 +4,9 @@
 $router->get('/', 'HomeController@index');
 $router->get('home', 'HomeController@index');
 $router->get('dashboard', 'DashboardController@index');
+$router->get('dashboard/filterData', 'DashboardController@filterData');
+$router->get('penelitian', 'PenelitianController@index');
+$router->get('penelitian/detail/{id}', 'PenelitianController@detail');
 
 // User routes
 $router->get('user', 'UserController@index');

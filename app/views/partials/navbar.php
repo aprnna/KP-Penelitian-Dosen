@@ -23,12 +23,14 @@
   .navbar-brand-custom img {
     height: 50px;
     width: auto;
+    object-fit: contain;
   }
 
   .brand-text {
     display: flex;
     flex-direction: column;
     line-height: 1.2;
+    font-weight: 700;
   }
 
   .brand-system {
@@ -164,8 +166,8 @@
     <!-- Brand (Left) -->
     <a class="navbar-brand-custom" href="<?php echo BASE_URL; ?>">
       <div class="brand-text">
-        <img src="<?php echo BASE_URL; ?>logo_unikom.png" alt="Logo UNIKOM">
-        <span class="brand-system">Visualisasi Penelitian</span>
+        <img src="<?php echo BASE_URL; ?>logo_unikom.png" alt="Logo UNIKOM" class="img-fluid ">
+        <span class="brand-system">Visualisasi Data Jurnal Penelitian</span>
       </div>
     </a>
 
@@ -185,17 +187,10 @@
         </li>
         <li>
           <a class="nav-btn <?php echo ($currentPage ?? '') === 'penelitian' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>penelitian">
-            <i class="bi bi-grid-3x3-gap-fill"></i>
+            <i class="bi bi-journal-text"></i>
             Penelitian Dosen
           </a>
         </li>
-        <li>
-          <a class="nav-btn <?php echo ($currentPage ?? '') === 'index-penelitian' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>index-penelitian">
-            <i class="bi bi-grid-3x3-gap-fill"></i>
-            Index Penelitian
-          </a>
-        </li>
-
         <!-- Login/User for Mobile -->
         <?php if (isset($user) && $user): ?>
           <li class="nav-item dropdown nav-right-mobile">
