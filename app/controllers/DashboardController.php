@@ -25,21 +25,23 @@ class DashboardController extends Controller
 
     // Models
     $authorModel = $this->model('Author');
-    $workModel = $this->model('Work');
+    $articleModel = $this->model('Article');
 
-    // Real data for dashboard
+    // Real data for dashboard - default to current year
+    $currentYear = date('Y');
     $statsData = [
       'total_dosen' => $authorModel->countAuthors(),
-      'total_publikasi' => $workModel->countTotalWorks(),
-      'total_terindeksasi' => $workModel->countIndexedWorks()
+      'total_publikasi' => $articleModel->countTotalArticles($currentYear),
+      'total_terindeksasi' => $articleModel->countIndexedArticles($currentYear)
     ];
 
-    // Filter Parameters for Ranked List (Default)
+    // Filter Parameters for Ranked List (Default to current year)
     $rankFaculty = $_GET['rank_faculty'] ?? 'Semua Fakultas';
+    $rankYear = $_GET['rank_year'] ?? date('Y');
 
     // Get Filtered Top Authors (Ranked List)
     // Note: User requested "jumlah publikasi jurnal terindeks terbanyak"
-    $topAuthors = $authorModel->getTopAuthorsByPublicationCount(10, $rankFaculty);
+    $topAuthors = $authorModel->getTopAuthorsByPublicationCount(10, $rankFaculty, $rankYear);
 
     $topDosenList = [];
     $rank = 1;
@@ -50,25 +52,25 @@ class DashboardController extends Controller
 
       if ($rank == 1) {
         $badgeClass = 'bg-warning text-white';
-        $badgeIcon = 'bi-trophy-fill';
+        $badgeIcon = 'MedalGold.png';
       }
       if ($rank == 2) {
         $badgeClass = 'bg-success text-white';
-        $badgeIcon = 'bi-trophy-fill';
+        $badgeIcon = 'MedalSilver.png';
       }
       if ($rank == 3) {
         $badgeClass = 'bg-info text-white';
-        $badgeIcon = 'bi-trophy-fill';
+        $badgeIcon = 'MedalBronze.png';
       }
 
 
       $topDosenList[] = [
         'rank' => $rank++,
         'name' => $author->fullname,
-        'faculty' => $author->programs_name,
+        'faculty' => $author->faculty,
         'nidn' => $author->nidn,
         'publications' => $author->pub_count,
-        'detail' => 'Sinta Score: ' . $author->sinta_score_v3_overall,
+        'detail' => 'Sinta Score Overall: ' . $author->sinta_score_overall,
         'badge_class' => $badgeClass,
         'badge_icon' => $badgeIcon
       ];
@@ -98,42 +100,29 @@ class DashboardController extends Controller
   private function getChartData()
   {
     $authorModel = $this->model('Author');
-    $workModel = $this->model('Work');
+    $articleModel = $this->model('Article');
 
-    // 1. Productivity Trend (Logic: Growth based to find most increased trend)
+    // 1. Productivity Trend (New Logic: Top 5 by Count in Last 5 Years)
     $currentYear = (int) date('Y');
-    $topGrowthAuthors = $authorModel->getTopAuthorsByGrowth(5, $currentYear - 2, $currentYear, null);
+    $startYear = $currentYear - 4;
+    $topTrendAuthors = $authorModel->getTopAuthorsByRangeCount(5, $startYear, $currentYear, null);
     $productivityData = [];
     $allYears = [];
-    $minYear = 9999;
-    $maxYear = 0;
 
-    // First pass to find min/max years across all top authors
-    $authorMetrics = [];
-    foreach ($topGrowthAuthors as $author) {
-      $metrics = $workModel->getProductivityTrend($author->id_author);
-      $authorMetrics[$author->id_author] = $metrics;
-      foreach ($metrics as $m) {
-        if ($m->year < $minYear)
-          $minYear = (int) $m->year;
-        if ($m->year > $maxYear)
-          $maxYear = (int) $m->year;
-      }
-    }
-
-    // If no data, fallback
-    if ($minYear == 9999) {
-      $minYear = date('Y') - 4;
-      $maxYear = date('Y');
-    }
-
-    // Build X-axis
-    for ($y = $minYear; $y <= $maxYear; $y++) {
+    // Build X-axis for last 5 years
+    for ($y = $startYear; $y <= $currentYear; $y++) {
       $allYears[] = (string) $y;
     }
 
-    foreach ($topGrowthAuthors as $author) {
-      $metrics = $authorMetrics[$author->id_author] ?? [];
+    // Get metrics for these top authors
+    $authorMetrics = [];
+    foreach ($topTrendAuthors as $author) {
+      $metrics = $articleModel->getProductivityTrend($author->id_sinta);
+      $authorMetrics[$author->id_sinta] = $metrics;
+    }
+
+    foreach ($topTrendAuthors as $author) {
+      $metrics = $authorMetrics[$author->id_sinta] ?? [];
       $countsByYear = [];
       foreach ($metrics as $m) {
         $countsByYear[$m->year] = $m->count;
@@ -151,8 +140,8 @@ class DashboardController extends Controller
     }
 
 
-    // 2. Faculty Distribution (Default: All Years)
-    $facultyStats = $authorModel->getFacultyPublicationStats(null); // Pass null for all years
+    // 2. Faculty Distribution (Default: this Year)
+    $facultyStats = $authorModel->getFacultyPublicationStats(date('Y'));
     $treemapData = [];
     foreach ($facultyStats as $stat) {
       $treemapData[] = [
@@ -161,8 +150,8 @@ class DashboardController extends Controller
       ];
     }
 
-    // 3. Top Journals (Default: All Years)
-    $topJournals = $workModel->getTopJournals(5, null, null);
+    // 3. Top Journals (Default: this Year)
+    $topJournals = $articleModel->getTopJournals(5, null, date('Y'));
     $barChart1 = [
       'labels' => [],
       'data' => []
@@ -173,8 +162,9 @@ class DashboardController extends Controller
     }
 
     // 4. Publication Type Trend (5 Years)
-    $startYear = date('Y') - 4;
-    $typeStats = $workModel->getWorkTypeStats($startYear, null); // null faculty
+    $currentYear = (int) date('Y');
+    $startYear = $currentYear - 4;
+    $typeStats = $articleModel->getArticleTypeStats($startYear, $currentYear, null); // null faculty
 
     $types = [];
     $typeDataRaw = [];
@@ -206,14 +196,14 @@ class DashboardController extends Controller
     }
 
     // 5. Top Impact Authors (New Chart)
-    $topImpactAuthors = $authorModel->getTopAuthorsByFaculty(null, 5); // Default All Faculties
+    $topImpactAuthors = $authorModel->getTopAuthorsByFaculty(null, null, 5); // Default All Faculties, All Years
     $impactChart = [
       'labels' => [],
       'data' => []
     ];
     foreach ($topImpactAuthors as $author) {
       $impactChart['labels'][] = $author->fullname;
-      $impactChart['data'][] = $author->sinta_score_v3_overall;
+      $impactChart['data'][] = $author->sinta_score_overall;
     }
 
     return [
@@ -241,37 +231,45 @@ class DashboardController extends Controller
       $faculty = null;
 
     $authorModel = $this->model('Author');
-    $workModel = $this->model('Work');
+    $articleModel = $this->model('Article');
 
     if ($type === 'ranked_list') {
-      $topAuthors = $authorModel->getTopAuthorsByPublicationCount(10, $faculty);
-      $data = [];
+      // Allow year filter
+      $topAuthors = $authorModel->getTopAuthorsByPublicationCount(10, $faculty, $year);
+
+      // Render HTML using component
+      ob_start();
       $rank = 1;
-      foreach ($topAuthors as $author) {
+      foreach ($topAuthors as $index => $author) {
         $badgeClass = 'bg-secondary';
         $badgeIcon = '';
         if ($rank == 1) {
           $badgeClass = 'bg-warning text-white';
-          $badgeIcon = 'bi-trophy-fill';
+          $badgeIcon = 'MedalGold.png';
         } elseif ($rank == 2) {
           $badgeClass = 'bg-success text-white';
-          $badgeIcon = 'bi-trophy-fill';
+          $badgeIcon = 'MedalSilver.png';
         } elseif ($rank == 3) {
           $badgeClass = 'bg-info text-white';
-          $badgeIcon = 'bi-trophy-fill';
+          $badgeIcon = 'MedalBronze.png';
         }
-        $data[] = [
-          'rank' => $rank++,
-          'name' => $author->fullname,
-          'faculty' => $author->programs_name,
-          'nidn' => $author->nidn,
-          'publications' => $author->pub_count,
-          'detail' => 'Sinta Score: ' . $author->sinta_score_v3_overall,
-          'badge_class' => $badgeClass,
-          'badge_icon' => $badgeIcon
-        ];
+
+
+        $name = $author->fullname;
+        $faculty = $author->faculty;
+        $nidn = $author->nidn;
+        $publications = $author->pub_count;
+        $detail = 'Sinta Score Overall: ' . $author->sinta_score_overall;
+        $badge_class = $badgeClass;
+        $badge_icon = $badgeIcon;
+        $isAlternate = $index % 2 == 1;
+
+        include '../app/views/components/ranked_list_item.php';
+        $rank++;
       }
-      echo json_encode(['data' => $data]);
+      $html = ob_get_clean();
+
+      echo json_encode(['html' => $html]);
       exit;
     }
 
@@ -279,39 +277,26 @@ class DashboardController extends Controller
       $productivityData = [];
       $allYears = [];
 
-      // Logic: Top 5 by Growth (Baseline 2 years)
-      $currentYear = (int) date('Y');
-      $topGrowthAuthors = $authorModel->getTopAuthorsByGrowth(5, $currentYear - 2, $currentYear, $faculty);
+      // Logic: Top 5 by Count in Range
+      // Year from filter or Current Year
+      $endYear = $year ? (int) $year : (int) date('Y');
+      $startYear = $endYear - 4;
 
-      $minYear = 9999;
-      $maxYear = 0;
+      $topTrendAuthors = $authorModel->getTopAuthorsByRangeCount(5, $startYear, $endYear, $faculty);
       $authorMetrics = [];
 
-      foreach ($topGrowthAuthors as $author) {
-        $metrics = $workModel->getProductivityTrend($author->id_author);
-        // Only count valid metrics
-        $validMetrics = [];
-        foreach ($metrics as $m) {
-          if ($m->year > 0) { // filter out 0 or null years if any
-            $validMetrics[] = $m;
-            if ($m->year < $minYear)
-              $minYear = (int) $m->year;
-            if ($m->year > $maxYear)
-              $maxYear = (int) $m->year;
-          }
-        }
-        $authorMetrics[$author->id_author] = $validMetrics;
-      }
-      if ($minYear == 9999) {
-        $minYear = date('Y') - 4;
-        $maxYear = date('Y');
-      }
-
-      for ($y = $minYear; $y <= $maxYear; $y++)
+      // Build X-axis
+      for ($y = $startYear; $y <= $endYear; $y++) {
         $allYears[] = (string) $y;
+      }
 
-      foreach ($topGrowthAuthors as $author) {
-        $metrics = $authorMetrics[$author->id_author] ?? [];
+      foreach ($topTrendAuthors as $author) {
+        $metrics = $articleModel->getProductivityTrend($author->id_sinta);
+        $authorMetrics[$author->id_sinta] = $metrics;
+      }
+
+      foreach ($topTrendAuthors as $author) {
+        $metrics = $authorMetrics[$author->id_sinta] ?? [];
         $countsByYear = [];
         foreach ($metrics as $m)
           $countsByYear[$m->year] = $m->count;
@@ -332,6 +317,9 @@ class DashboardController extends Controller
 
     if ($type === 'treemap') {
       // Faculty Distribution filtered by Year
+      if (empty($year)) {
+        $year = null;
+      }
       $facultyStats = $authorModel->getFacultyPublicationStats($year);
       $treemapData = [];
       $totalPubs = 0;
@@ -351,13 +339,14 @@ class DashboardController extends Controller
     }
 
     if ($type === 'pub_type') {
-      $startYear = date('Y') - 4;
-      $typeStats = $workModel->getWorkTypeStats($startYear, $faculty);
+      $endYear = $year ? (int) $year : (int) date('Y');
+      $startYear = $endYear - 4;
+      $typeStats = $articleModel->getArticleTypeStats($startYear, $endYear, $faculty);
 
       $types = [];
       $typeDataRaw = [];
       $allYears = [];
-      for ($y = $startYear; $y <= date('Y'); $y++)
+      for ($y = $startYear; $y <= $endYear; $y++)
         $allYears[] = (string) $y;
 
       foreach ($typeStats as $ts) {
@@ -381,7 +370,7 @@ class DashboardController extends Controller
     if ($type === 'top_journals') {
       // Top 5 Journals (Null = All Years)
       $targetYear = $year ?: null;
-      $topJournals = $workModel->getTopJournals(5, $faculty, $targetYear);
+      $topJournals = $articleModel->getTopJournals(5, $faculty, $targetYear);
 
       $labels = [];
       $data = [];
@@ -394,14 +383,36 @@ class DashboardController extends Controller
     }
 
     if ($type === 'top_impact') {
-      $topAuthors = $authorModel->getTopAuthorsByFaculty($faculty, 5);
+      $topAuthors = $authorModel->getTopAuthorsByFaculty($faculty, $year, 5);
       $labels = [];
       $data = [];
       foreach ($topAuthors as $a) {
         $labels[] = $a->fullname;
-        $data[] = $a->sinta_score_v3_overall;
+        $data[] = $a->sinta_score_overall;
       }
       echo json_encode(['labels' => $labels, 'data' => $data]);
+      exit;
+    }
+    if ($type === 'stats') {
+      $faculty = $_GET['faculty'] ?? null;
+      $year = $_GET['year'] ?? null;
+
+      if ($faculty === 'Semua Fakultas')
+        $faculty = null;
+
+      if (empty($year)) {
+        $year = null;
+      }
+
+      $totalDosen = $authorModel->countAuthors($faculty);
+      $totalPublikasi = $articleModel->countTotalArticles($year, $faculty);
+      $totalTerindeksasi = $articleModel->countIndexedArticles($year, $faculty);
+
+      echo json_encode([
+        'total_dosen' => $totalDosen,
+        'total_publikasi' => $totalPublikasi,
+        'total_terindeksasi' => $totalTerindeksasi
+      ]);
       exit;
     }
   }

@@ -172,7 +172,8 @@
     </a>
 
     <!-- Mobile Toggle -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -180,21 +181,31 @@
     <div class="collapse navbar-collapse nav-center" id="navbarNav">
       <ul class="nav-menu-custom">
         <li>
-          <a class="nav-btn <?php echo ($currentPage ?? '') === 'dashboard' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>dashboard">
+          <a class="nav-btn <?php echo ($currentPage ?? '') === 'dashboard' ? 'active' : ''; ?>"
+            href="<?php echo BASE_URL; ?>dashboard">
             <i class="bi bi-grid-3x3-gap-fill"></i>
             Dashboard
           </a>
         </li>
         <li>
-          <a class="nav-btn <?php echo ($currentPage ?? '') === 'penelitian' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>penelitian">
+          <a class="nav-btn <?php echo ($currentPage ?? '') === 'penelitian' ? 'active' : ''; ?>"
+            href="<?php echo BASE_URL; ?>penelitian">
             <i class="bi bi-journal-text"></i>
             Penelitian Dosen
+          </a>
+        </li>
+        <li class="d-none">
+          <a class="nav-btn <?php echo ($currentPage ?? '') === 'scraping' ? 'active' : ''; ?>"
+            href="<?php echo BASE_URL; ?>scraping">
+            <i class="bi bi-cloud-download"></i>
+            Scraping
           </a>
         </li>
         <!-- Login/User for Mobile -->
         <?php if (isset($user) && $user): ?>
           <li class="nav-item dropdown nav-right-mobile">
-            <a class="nav-btn nav-btn-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-btn nav-btn-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
               <i class="bi bi-person-circle"></i>
               <?php echo htmlspecialchars($user->full_name); ?>
             </a>
@@ -223,7 +234,8 @@
     <div class="nav-right">
       <?php if (isset($user) && $user): ?>
         <div class="dropdown">
-          <a class="nav-btn nav-btn-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-btn nav-btn-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
             <i class="bi bi-person-circle"></i>
             <?php echo htmlspecialchars($user->full_name); ?>
           </a>

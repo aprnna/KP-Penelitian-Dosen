@@ -1,6 +1,6 @@
 <?php
 
-class Work
+class Article
 {
   private $db;
 
@@ -9,34 +9,34 @@ class Work
     $this->db = new Database();
   }
 
-  // Get work by ID
-  public function getWorkById($id)
+  // Get article by ID
+  public function getArticleById($id)
   {
-    $this->db->query('SELECT * FROM works WHERE id_work = :id');
+    $this->db->query('SELECT * FROM articles WHERE id_article = :id');
     $this->db->bind(':id', $id);
     return $this->db->single();
   }
 
-  // Get all works for a specific author
-  public function getWorksByAuthorId($authorId)
+  // Get all articles for a specific author
+  public function getArticlesByAuthorId($authorId)
   {
     $this->db->query('
-      SELECT w.* 
-      FROM works w
-      JOIN author_works aw ON w.id_work = aw.id_work
-      WHERE aw.id_sinta = :author_id
-      ORDER BY w.published DESC
+      SELECT a.* 
+      FROM articles a
+      JOIN author_article aa ON a.id_article = aa.id_article
+      WHERE aa.id_sinta = :author_id
+      ORDER BY a.published DESC
     ');
     $this->db->bind(':author_id', $authorId);
     return $this->db->resultSet();
   }
 
-  // Count works for a specific author
-  public function countWorksByAuthorId($authorId)
+  // Count articles for a specific author
+  public function countArticlesByAuthorId($authorId)
   {
     $this->db->query('
       SELECT COUNT(*) as total
-      FROM author_works
+      FROM author_article
       WHERE id_sinta = :author_id
     ');
     $this->db->bind(':author_id', $authorId);
@@ -44,36 +44,35 @@ class Work
     return $result->total;
   }
 
-  // Get works statistics by type for detailed graphs (Overall or filtered)
-  // Get works statistics by type for detailed graphs (Overall or filtered)
-  public function getWorkTypeStats($startYear = null, $endYear = null, $faculty = null)
+  // Get articles statistics by type for detailed graphs (Overall or filtered)
+  public function getArticleTypeStats($startYear = null, $endYear = null, $faculty = null)
   {
     $sql = '
-      SELECT w.type, SUBSTRING(w.published, 1, 4) as year, COUNT(*) as count 
-      FROM works w
+      SELECT a.type, SUBSTRING(a.published, 1, 4) as year, COUNT(*) as count 
+      FROM articles a
     ';
 
     // If filtering by faculty, we need to join authors
     if ($faculty && $faculty !== 'Semua Fakultas') {
-      $sql .= ' JOIN author_works aw ON w.id_work = aw.id_work 
-                  JOIN authors a ON aw.id_sinta = a.id_sinta ';
+      $sql .= ' JOIN author_article aa ON a.id_article = aa.id_article 
+                  JOIN authors au ON aa.id_sinta = au.id_sinta ';
     }
 
-    $sql .= ' WHERE w.published IS NOT NULL AND w.published != "" ';
+    $sql .= ' WHERE a.published IS NOT NULL AND a.published != "" ';
 
     if ($startYear) {
-      $sql .= ' AND SUBSTRING(w.published, 1, 4) >= :start_year ';
+      $sql .= ' AND SUBSTRING(a.published, 1, 4) >= :start_year ';
     }
 
     if ($endYear) {
-      $sql .= ' AND SUBSTRING(w.published, 1, 4) <= :end_year ';
+      $sql .= ' AND SUBSTRING(a.published, 1, 4) <= :end_year ';
     }
 
     if ($faculty && $faculty !== 'Semua Fakultas') {
-      $sql .= ' AND a.faculty LIKE :faculty ';
+      $sql .= ' AND au.faculty LIKE :faculty ';
     }
 
-    $sql .= ' GROUP BY w.type, year ORDER BY year ASC';
+    $sql .= ' GROUP BY a.type, year ORDER BY year ASC';
 
     $this->db->query($sql);
 
@@ -94,23 +93,23 @@ class Work
   public function getTopJournals($limit = 5, $faculty = null, $year = null)
   {
     $sql = '
-          SELECT w.container_title as journal_name, COUNT(*) as total
-          FROM works w
-          JOIN author_works aw ON w.id_work = aw.id_work
-          JOIN authors a ON aw.id_sinta = a.id_sinta
-          WHERE w.container_title IS NOT NULL AND w.container_title != ""
+          SELECT a.journal_title as journal_name, COUNT(*) as total
+          FROM articles a
+          JOIN author_article aa ON a.id_article = aa.id_article
+          JOIN authors au ON aa.id_sinta = au.id_sinta
+          WHERE a.journal_title IS NOT NULL AND a.journal_title != ""
       ';
 
     if ($year) {
-      $sql .= ' AND w.published LIKE :year ';
+      $sql .= ' AND a.published LIKE :year ';
     }
-    $sql .= ' AND w.indexed_date_time IS NOT NULL AND w.indexed_date_time != "" ';
+    $sql .= ' AND a.indexed_date_time IS NOT NULL AND a.indexed_date_time != "" ';
 
     if ($faculty && $faculty !== 'Semua Fakultas') {
-      $sql .= ' AND a.faculty LIKE :faculty ';
+      $sql .= ' AND au.faculty LIKE :faculty ';
     }
 
-    $sql .= ' GROUP BY w.container_title ORDER BY total DESC LIMIT :limit';
+    $sql .= ' GROUP BY a.journal_title ORDER BY total DESC LIMIT :limit';
 
     $this->db->query($sql);
 
@@ -124,25 +123,25 @@ class Work
   }
 
   // Count total publications
-  public function countTotalWorks($year = null, $faculty = null)
+  public function countTotalArticles($year = null, $faculty = null)
   {
-    $sql = 'SELECT COUNT(DISTINCT w.id_work) as total FROM works w';
+    $sql = 'SELECT COUNT(DISTINCT a.id_article) as total FROM articles a';
 
     // Joins needed if filtering by faculty
     if ($faculty && $faculty !== 'Semua Fakultas') {
-      $sql .= ' JOIN author_works aw ON w.id_work = aw.id_work 
-                JOIN authors a ON aw.id_sinta = a.id_sinta ';
+      $sql .= ' JOIN author_article aa ON a.id_article = aa.id_article 
+                JOIN authors au ON aa.id_sinta = au.id_sinta ';
     }
 
     $conditions = [];
     // Only published year check if year is set
     if ($year) {
-      $conditions[] = 'w.published LIKE :year';
+      $conditions[] = 'a.published LIKE :year';
     }
 
     // Faculty check
     if ($faculty && $faculty !== 'Semua Fakultas') {
-      $conditions[] = 'a.faculty LIKE :faculty';
+      $conditions[] = 'au.faculty LIKE :faculty';
     }
 
     if (!empty($conditions)) {
@@ -162,10 +161,10 @@ class Work
     return $result->total;
   }
 
-  // Get recent works
-  public function getRecentWorks($limit = 10)
+  // Get recent articles
+  public function getRecentArticles($limit = 10)
   {
-    $this->db->query('SELECT * FROM works ORDER BY published DESC LIMIT :limit');
+    $this->db->query('SELECT * FROM articles ORDER BY published DESC LIMIT :limit');
     $this->db->bind(':limit', $limit);
     return $this->db->resultSet();
   }
@@ -176,9 +175,9 @@ class Work
     // Group by first 4 characters of published date (Year)
     $this->db->query('
         SELECT SUBSTRING(published, 1, 4) as year, COUNT(*) as count
-        FROM works w
-        JOIN author_works aw ON w.id_work = aw.id_work
-        WHERE aw.id_sinta = :author_id AND w.published IS NOT NULL AND w.published != ""
+        FROM articles a
+        JOIN author_article aa ON a.id_article = aa.id_article
+        WHERE aa.id_sinta = :author_id AND a.published IS NOT NULL AND a.published != ""
         GROUP BY year
         ORDER BY year ASC
      ');
@@ -186,25 +185,25 @@ class Work
     return $this->db->resultSet();
   }
 
-  // Count works that are indexed (have indexed_date_time)
-  public function countIndexedWorks($year = null, $faculty = null)
+  // Count articles that are indexed (have indexed_date_time)
+  public function countIndexedArticles($year = null, $faculty = null)
   {
-    $sql = 'SELECT COUNT(DISTINCT w.id_work) as total FROM works w';
+    $sql = 'SELECT COUNT(DISTINCT a.id_article) as total FROM articles a';
 
     if ($faculty && $faculty !== 'Semua Fakultas') {
-      $sql .= ' JOIN author_works aw ON w.id_work = aw.id_work 
-                JOIN authors a ON aw.id_sinta = a.id_sinta ';
+      $sql .= ' JOIN author_article aa ON a.id_article = aa.id_article 
+                JOIN authors au ON aa.id_sinta = au.id_sinta ';
     }
 
     $conditions = [];
-    $conditions[] = 'w.indexed_date_time IS NOT NULL AND w.indexed_date_time != ""';
+    $conditions[] = 'a.indexed_date_time IS NOT NULL AND a.indexed_date_time != ""';
 
     if ($year) {
-      $conditions[] = 'w.published LIKE :year';
+      $conditions[] = 'a.published LIKE :year';
     }
 
     if ($faculty && $faculty !== 'Semua Fakultas') {
-      $conditions[] = 'a.faculty LIKE :faculty';
+      $conditions[] = 'au.faculty LIKE :faculty';
     }
 
     $sql .= ' WHERE ' . implode(' AND ', $conditions);
@@ -225,26 +224,26 @@ class Work
   public function getAuthorRoleRatios($authorId)
   {
     $this->db->query('
-      SELECT w.authors, a.fullname
-      FROM works w
-      JOIN author_works aw ON w.id_work = aw.id_work
-      JOIN authors a ON aw.id_sinta = a.id_sinta
-      WHERE aw.id_sinta = :author_id
+      SELECT a.authors, au.fullname
+      FROM articles a
+      JOIN author_article aa ON a.id_article = aa.id_article
+      JOIN authors au ON aa.id_sinta = au.id_sinta
+      WHERE aa.id_sinta = :author_id
     ');
     $this->db->bind(':author_id', $authorId);
-    $works = $this->db->resultSet();
+    $articles = $this->db->resultSet();
 
     $utama = 0;
     $co = 0;
 
-    foreach ($works as $work) {
-      if (empty($work->authors))
+    foreach ($articles as $article) {
+      if (empty($article->authors))
         continue;
 
-      $authorsList = explode(';', $work->authors);
+      $authorsList = explode(';', $article->authors);
       $firstAuthor = trim($authorsList[0]);
 
-      if (strcasecmp($firstAuthor, $work->fullname) == 0) {
+      if (strcasecmp($firstAuthor, $article->fullname) == 0) {
         $utama++;
       } else {
         $co++;
@@ -252,8 +251,8 @@ class Work
     }
 
     $total = $utama + $co;
-    $rasioUtama = $total > 0 ? round(($utama / $total) * 100, 1) : 0;
-    $rasioCo = $total > 0 ? round(($co / $total) * 100, 1) : 0;
+    $rasioUtama = $total > 0 ? ceil(($utama / $total) * 100) : 0;
+    $rasioCo = $total > 0 ? ceil(($co / $total) * 100) : 0;
 
     return [
       'utama_count' => $utama,
@@ -263,29 +262,29 @@ class Work
     ];
   }
 
-  // Get unique work types for a specific author
+  // Get unique article types for a specific author
   public function getUniqueTypesByAuthor($authorId)
   {
     $this->db->query('
-      SELECT DISTINCT w.type 
-      FROM works w
-      JOIN author_works aw ON w.id_work = aw.id_work
-      WHERE aw.id_sinta = :author_id AND w.type IS NOT NULL AND w.type != ""
-      ORDER BY w.type ASC
+      SELECT DISTINCT a.type 
+      FROM articles a
+      JOIN author_article aa ON a.id_article = aa.id_article
+      WHERE aa.id_sinta = :author_id AND a.type IS NOT NULL AND a.type != ""
+      ORDER BY a.type ASC
     ');
     $this->db->bind(':author_id', $authorId);
     return $this->db->resultSet();
   }
 
-  // Get paginated works by type for a specific author
-  public function getWorksByTypeAndAuthor($authorId, $type, $limit, $offset)
+  // Get paginated articles by type for a specific author
+  public function getArticlesByTypeAndAuthor($authorId, $type, $limit, $offset)
   {
     $this->db->query('
-      SELECT w.* 
-      FROM works w
-      JOIN author_works aw ON w.id_work = aw.id_work
-      WHERE aw.id_sinta = :author_id AND w.type = :type
-      ORDER BY w.published DESC
+      SELECT a.* 
+      FROM articles a
+      JOIN author_article aa ON a.id_article = aa.id_article
+      WHERE aa.id_sinta = :author_id AND a.type = :type
+      ORDER BY a.published DESC
       LIMIT :limit OFFSET :offset
     ');
     $this->db->bind(':author_id', $authorId);
@@ -295,14 +294,14 @@ class Work
     return $this->db->resultSet();
   }
 
-  // Count works by type for a specific author
-  public function countWorksByTypeAndAuthor($authorId, $type)
+  // Count articles by type for a specific author
+  public function countArticlesByTypeAndAuthor($authorId, $type)
   {
     $this->db->query('
       SELECT COUNT(*) as total 
-      FROM works w
-      JOIN author_works aw ON w.id_work = aw.id_work
-      WHERE aw.id_sinta = :author_id AND w.type = :type
+      FROM articles a
+      JOIN author_article aa ON a.id_article = aa.id_article
+      WHERE aa.id_sinta = :author_id AND a.type = :type
     ');
     $this->db->bind(':author_id', $authorId);
     $this->db->bind(':type', $type);

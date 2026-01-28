@@ -9,29 +9,30 @@
   <!-- Filters -->
   <div class="row mb-4">
     <div class="col-md-3">
-      <label class="form-label small text-muted">Jurusan</label>
-      <select class="form-select" id="jurusanFilter">
-        <option selected>Semua Jurusan</option>
-        <option>Teknik Informatika</option>
-        <option>Sistem Informasi</option>
-        <option>Ilmu Manajemen</option>
-        <option>Ilmu Hukum</option>
-        <option>Ekonomi</option>
-        <option>Akuntansi</option>
+      <label class="form-label small text-muted">Fakultas</label>
+      <select class="form-select" id="fakultasFilter">
+        <option value="Semua Fakultas">Semua Fakultas</option>
+        <?php foreach ($faculties as $fac): ?>
+          <option value="<?php echo htmlspecialchars($fac->faculty); ?>" <?php echo (isset($faculty) && $faculty === $fac->faculty) ? 'selected' : ''; ?>>
+            <?php echo htmlspecialchars($fac->faculty); ?>
+          </option>
+        <?php endforeach; ?>
       </select>
     </div>
     <div class="col-md-5">
       <label class="form-label small text-muted">Nama Dosen</label>
-      <input type="text" class="form-control" id="dosenSearch" placeholder="Masukkan nama dosen">
+      <input type="text" class="form-control" id="dosenSearch" placeholder="Masukkan nama dosen"
+        value="<?php echo isset($search) ? htmlspecialchars($search) : ''; ?>">
     </div>
   </div>
 
   <!-- Data Table Card -->
   <div class="row">
     <div class="col-12">
+
       <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white border-0 py-3">
-          <h5 class="mb-0 fw-bold">Pencarian Penelitian Berdasarkan Dosen</h5>
+        <div class="card-header p-4 text-center">
+          <h3>Pencarian Penelitian Berdasarkan Dosen</h3>
         </div>
         <div class="card-body p-0">
           <div class="table-responsive">
@@ -41,7 +42,7 @@
                   <th class="py-3 px-4 border-0">
                     <div class="d-flex align-items-center">
                       <span
-                        class="rounded-circle bg-warning d-inline-flex align-items-center justify-content-center me-2"
+                        class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center me-2"
                         style="width: 32px; height: 32px;">
                         <i class="bi bi-person-circle text-white"></i>
                       </span>
@@ -51,7 +52,7 @@
                   <th class="py-3 px-4 border-0 text-center">
                     <div class="d-flex align-items-center justify-content-center">
                       <span
-                        class="rounded-circle bg-warning d-inline-flex align-items-center justify-content-center me-2"
+                        class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center me-2"
                         style="width: 32px; height: 32px;">
                         <i class="bi bi-journal-text text-white"></i>
                       </span>
@@ -61,31 +62,41 @@
                   <th class="py-3 px-4 border-0 text-center">
                     <div class="d-flex align-items-center justify-content-center">
                       <span
-                        class="rounded-circle bg-warning d-inline-flex align-items-center justify-content-center me-2"
+                        class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center me-2"
                         style="width: 32px; height: 32px;">
                         <i class="bi bi-graph-up text-white"></i>
                       </span>
-                      <span class="fw-bold">Skor Relevansi</span>
+                      <span class="fw-bold">SINTA Score 3Yr</span>
                     </div>
                   </th>
                   <th class="py-3 px-4 border-0 text-center">
                     <div class="d-flex align-items-center justify-content-center">
                       <span
-                        class="rounded-circle bg-warning d-inline-flex align-items-center justify-content-center me-2"
+                        class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center me-2"
                         style="width: 32px; height: 32px;">
-                        <i class="bi bi-bookmark-check text-white"></i>
+                        <i class="bi bi-bar-chart text-white"></i>
                       </span>
-                      <span class="fw-bold">H-index</span>
+                      <span class="fw-bold">SINTA Score</span>
                     </div>
                   </th>
                   <th class="py-3 px-4 border-0 text-center">
                     <div class="d-flex align-items-center justify-content-center">
                       <span
-                        class="rounded-circle bg-warning d-inline-flex align-items-center justify-content-center me-2"
+                        class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center me-2"
                         style="width: 32px; height: 32px;">
-                        <i class="bi bi-award text-white"></i>
+                        <i class="bi bi-building text-white"></i>
                       </span>
-                      <span class="fw-bold">i10-index</span>
+                      <span class="fw-bold">Affil Score 3Yr</span>
+                    </div>
+                  </th>
+                  <th class="py-3 px-4 border-0 text-center">
+                    <div class="d-flex align-items-center justify-content-center">
+                      <span
+                        class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center me-2"
+                        style="width: 32px; height: 32px;">
+                        <i class="bi bi-building-fill text-white"></i>
+                      </span>
+                      <span class="fw-bold">Affil Score</span>
                     </div>
                   </th>
                 </tr>
@@ -94,16 +105,17 @@
                 <?php foreach ($penelitianData as $index => $dosen): ?>
                   <?php
                   $name = $dosen['name'];
-                  // Use NIDN for display ID
                   $id = $dosen['nidn'];
                   $faculty = $dosen['faculty'];
                   $jumlah_jurnal = $dosen['jumlah_jurnal'];
-                  $skor_relevansi = $dosen['skor_relevansi'];
-                  $h_index = $dosen['h_index'];
-                  $i10_index = $dosen['i10_index'];
+                  $sinta_score_3yr = $dosen['sinta_score_3yr'];
+                  $sinta_score = $dosen['sinta_score'];
+                  $affil_score_3yr = $dosen['affil_score_3yr'];
+                  $affil_score = $dosen['affil_score'];
+                  $scopus_h_index = $dosen['scopus_h_index'];
+                  $gs_h_index = $dosen['gs_h_index'];
                   $isAlternate = $index % 2 == 1;
-                  // Use database primary key for URL
-                  $detailUrl = BASE_URL . 'penelitian/detail/' . $dosen['id_author'];
+                  $detailUrl = BASE_URL . 'penelitian/detail/' . $dosen['id_sinta'];
                   include '../app/views/components/penelitian_row.php';
                   ?>
                 <?php endforeach; ?>
@@ -116,16 +128,31 @@
         <div class="card-footer bg-white border-0 py-3">
           <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center mb-0">
+              <?php
+              // Helper function to build pagination URLs with preserved filters
+              function buildPaginationUrl($page, $faculty = null, $search = null)
+              {
+                $params = ['page' => $page];
+                if ($faculty && $faculty !== 'Semua Fakultas') {
+                  $params['faculty'] = $faculty;
+                }
+                if ($search) {
+                  $params['search'] = $search;
+                }
+                return '?' . http_build_query($params);
+              }
+              ?>
               <!-- First Page -->
               <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
-                <a class="page-link" href="?page=1" aria-label="First">
+                <a class="page-link" href="<?php echo buildPaginationUrl(1, $faculty, $search); ?>" aria-label="First">
                   <span aria-hidden="true">&laquo; First</span>
                 </a>
-              </li>
+                </l i>
 
-              <!-- Previous Page -->
+                <!-- Previous Page -->
               <li class="page-item <?php echo ($currentPage <= 1) ? 'disabled' : ''; ?>">
-                <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>" aria-label="Previous">
+                <a class="page-link" href="<?php echo buildPaginationUrl($currentPage - 1, $faculty, $search); ?>"
+                  aria-label="Previous">
                   <span aria-hidden="true">&lsaquo;</span>
                 </a>
               </li>
@@ -141,20 +168,23 @@
 
               for ($i = $startPage; $i <= $endPage; $i++): ?>
                 <li class="page-item <?php echo ($i == $currentPage) ? 'active' : ''; ?>">
-                  <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                  <a class="page-link"
+                    href="<?php echo buildPaginationUrl($i, $faculty, $search); ?>"><?php echo $i; ?></a>
                 </li>
               <?php endfor; ?>
 
               <!-- Next Page -->
               <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
-                <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>" aria-label="Next">
+                <a class="page-link" href="<?php echo buildPaginationUrl($currentPage + 1, $faculty, $search); ?>"
+                  aria-label="Next">
                   <span aria-hidden="true">&rsaquo;</span>
                 </a>
               </li>
 
               <!-- Last Page -->
               <li class="page-item <?php echo ($currentPage >= $totalPages) ? 'disabled' : ''; ?>">
-                <a class="page-link" href="?page=<?php echo $totalPages; ?>" aria-label="Last">
+                <a class="page-link" href="<?php echo buildPaginationUrl($totalPages, $faculty, $search); ?>"
+                  aria-label="Last">
                   <span aria-hidden="true">Last &raquo;</span>
                 </a>
               </li>
@@ -167,40 +197,47 @@
 </div>
 
 <script>
-  // Search functionality
+  // Search functionality - trigger on Enter key or after delay
+  let searchTimeout;
   document.getElementById('dosenSearch').addEventListener('input', function (e) {
-    const searchTerm = e.target.value.toLowerCase();
-    const tableRows = document.querySelectorAll('tbody tr');
-
-    tableRows.forEach(row => {
-      const dosenName = row.querySelector('td:first-child span').textContent.toLowerCase();
-      if (dosenName.includes(searchTerm)) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-    });
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      applyFilters();
+    }, 800); // Delay 800ms before triggering search
   });
 
-  // Filter functionality
-  document.getElementById('jurusanFilter').addEventListener('change', function (e) {
-    const selectedJurusan = e.target.value;
-    const tableRows = document.querySelectorAll('tbody tr');
+  // Search on Enter key
+  document.getElementById('dosenSearch').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      clearTimeout(searchTimeout);
+      applyFilters();
+    }
+  });
 
-    if (selectedJurusan === 'Semua Jurusan') {
-      tableRows.forEach(row => row.style.display = '');
-      return;
+  // Filter functionality - trigger immediately on change
+  document.getElementById('fakultasFilter').addEventListener('change', function (e) {
+    applyFilters();
+  });
+
+  // Function to apply filters by reloading page with query params
+  function applyFilters() {
+    const faculty = document.getElementById('fakultasFilter').value;
+    const search = document.getElementById('dosenSearch').value.trim();
+
+    const params = new URLSearchParams();
+    params.set('page', '1'); // Reset to page 1 when filters change
+
+    if (faculty && faculty !== 'Semua Fakultas') {
+      params.set('faculty', faculty);
     }
 
-    tableRows.forEach(row => {
-      const faculty = row.querySelector('td:first-child small:last-child').textContent;
-      if (faculty.includes(selectedJurusan)) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-    });
-  });
+    if (search) {
+      params.set('search', search);
+    }
+
+    // Reload page with new params
+    window.location.href = '?' + params.toString();
+  }
 
   // Clickable rows
   document.querySelectorAll('.clickable-row').forEach(row => {

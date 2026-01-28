@@ -17,27 +17,33 @@ class PenelitianController extends Controller
     // Pagination variables
     $limit = 12;
     $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+    $faculty = isset($_GET['faculty']) ? $_GET['faculty'] : null;
+    $search = isset($_GET['search']) ? $_GET['search'] : null;
     $offset = ($page - 1) * $limit;
 
     // Get real data from database with pagination
     $authorModel = $this->model('Author');
-    $workModel = $this->model('Work');
+    $articleModel = $this->model('Article');
 
-    $totalAuthors = $authorModel->countAuthors();
+    $totalAuthors = $authorModel->countAuthors($faculty, $search);
     $totalPages = ceil($totalAuthors / $limit);
-    $authors = $authorModel->getAuthors($limit, $offset);
+    $authors = $authorModel->getAuthors($limit, $offset, $faculty, $search);
+    $faculties = $authorModel->getUniqueFaculties();
 
     $penelitianData = [];
     foreach ($authors as $author) {
       $penelitianData[] = [
-        'id_author' => $author->id_author,
+        'id_sinta' => $author->id_sinta,
         'name' => $author->fullname,
         'nidn' => $author->nidn,
-        'faculty' => $author->programs_name,
-        'jumlah_jurnal' => $workModel->countWorksByAuthorId($author->id_author),
-        'skor_relevansi' => $author->sinta_score_v3_overall ?? 0,
-        'h_index' => $author->sinta_score_v3_3year ?? 0,
-        'i10_index' => $author->affiliation_score_v3_overall ?? 0
+        'faculty' => $author->faculty,
+        'jumlah_jurnal' => $articleModel->countArticlesByAuthorId($author->id_sinta),
+        'sinta_score' => $author->sinta_score_overall ?? 0,
+        'sinta_score_3yr' => $author->sinta_score_3yr ?? 0,
+        'affil_score' => $author->affil_score ?? 0,
+        'affil_score_3yr' => $author->affil_score_3yr ?? 0,
+        'scopus_h_index' => $author->s_hindex_scopus ?? 0,
+        'gs_h_index' => $author->s_hindex_gscholar ?? 0
       ];
     }
 
@@ -47,7 +53,10 @@ class PenelitianController extends Controller
       'penelitianData' => $penelitianData,
       'totalPages' => $totalPages,
       'currentPage' => $page,
+      'faculty' => $faculty,
+      'search' => $search,
       'viewContent' => 'penelitian/index',
+      'faculties' => $faculties,
       'showNavbar' => true,
       'activeTab' => 'penelitian' // Used for navbar active state
     ];
@@ -68,7 +77,7 @@ class PenelitianController extends Controller
     $user = $userModel->getUserById($_SESSION['user_id']);
 
     $authorModel = $this->model('Author');
-    $workModel = $this->model('Work');
+    $articleModel = $this->model('Article');
 
     // Get detail dosen by ID (PK)
     $author = $authorModel->getAuthorById($id);
@@ -79,27 +88,31 @@ class PenelitianController extends Controller
       exit;
     }
 
-    $works = $workModel->getWorksByAuthorId($id);
-    $count = count($works);
+    $articles = $articleModel->getArticlesByAuthorId($id);
+    $count = count($articles);
 
-    $ratios = $workModel->getAuthorRoleRatios($id);
+    $ratios = $articleModel->getAuthorRoleRatios($id);
 
     // Prepare dosen detail
     $dosenDetail = [
-      'id' => $author->id_author,
+      'id' => $author->id_sinta,
       'name' => $author->fullname,
       'nidn' => $author->nidn,
-      'faculty' => $author->programs_name,
+      'faculty' => $author->faculty,
       'jumlah_jurnal' => $count,
-      'skor_relevansi' => $author->sinta_score_v3_overall ?? 0,
-      'h_index' => $author->sinta_score_v3_3year ?? 0,
-      'i10_index' => $author->affiliation_score_v3_overall ?? 0,
+      'sinta_score' => $author->sinta_score_overall ?? 0,
+      'sinta_score_3yr' => $author->sinta_score_3yr ?? 0,
+      'affil_score' => $author->affil_score ?? 0,
+      'affil_score_3yr' => $author->affil_score_3yr ?? 0,
+      'scopus_h_index' => $author->s_hindex_scopus ?? 0,
+      'gs_h_index' => $author->s_hindex_gscholar ?? 0,
+      'subject_research' => $author->subject_research ?? 'Research & Publications',
       'rasio_utama' => $ratios['rasio_utama'],
       'rasio_coauthor' => $ratios['rasio_coauthor']
     ];
 
     // Dynamic Publication Categories with Pagination
-    $uniqueTypes = $workModel->getUniqueTypesByAuthor($id);
+    $uniqueTypes = $articleModel->getUniqueTypesByAuthor($id);
     $categorizedPublications = [];
     $pubLimit = 5;
 
@@ -110,20 +123,20 @@ class PenelitianController extends Controller
       $currentPubPage = isset($_GET[$paramKey]) ? (int) $_GET[$paramKey] : 1;
       $pubOffset = ($currentPubPage - 1) * $pubLimit;
 
-      $totalPubs = $workModel->countWorksByTypeAndAuthor($id, $type);
+      $totalPubs = $articleModel->countArticlesByTypeAndAuthor($id, $type);
       $totalPubPages = ceil($totalPubs / $pubLimit);
-      $typeWorks = $workModel->getWorksByTypeAndAuthor($id, $type, $pubLimit, $pubOffset);
+      $typeArticles = $articleModel->getArticlesByTypeAndAuthor($id, $type, $pubLimit, $pubOffset);
 
       $publications = [];
-      foreach ($typeWorks as $work) {
+      foreach ($typeArticles as $article) {
         $publications[] = [
-          'title' => $work->title,
-          'program_studi' => $author->programs_name,
-          'journal' => $work->container_title ?? '-',
-          'journal_name' => $work->source ?? 'Source',
-          'doi' => $work->doi ?? '-',
-          'year' => $work->published,
-          'type' => $work->type ?? 'Article'
+          'title' => $article->title,
+          'program_studi' => $author->faculty,
+          'journal' => $article->journal_title ?? '-',
+          'journal_name' => $article->source ?? 'Source',
+          'doi' => $article->doi ?? '-',
+          'year' => $article->published,
+          'type' => $article->type ?? 'Article'
         ];
       }
 

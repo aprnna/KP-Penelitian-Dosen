@@ -8,73 +8,155 @@
     </div>
   </div>
 
-  <!-- Main Content Row -->
-  <div class="row g-4 mb-4">
-    <!-- Left Column: Dosen Info + Metrics -->
-    <div class="col-lg-7">
+  <!-- Main Content Card -->
+  <div class="row mb-4">
+    <div class="col-12">
       <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
-          <!-- Dosen Name and Info -->
-          <h3 class="fw-bold mb-2"><?php echo htmlspecialchars($dosen['name']); ?></h3>
-          <div class="mb-4">
-            <p class="mb-1">
-              <i class="bi bi-credit-card-2-front text-primary me-2"></i>
-              NIDN:<?php echo htmlspecialchars($dosen['nidn']); ?>
-            </p>
-            <p class="mb-0">
-              <i class="bi bi-building text-primary me-2"></i>
-              <?php echo htmlspecialchars($dosen['faculty']); ?>
-            </p>
+          <!-- Profile Section -->
+          <div class="row mb-4">
+            <!-- Profile Photo -->
+            <div class="col-md-2 text-center mb-3 mb-md-0">
+              <div class="profile-photo mx-auto"
+                style="width: 140px; height: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
+              </div>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="col-md-10">
+              <div class="d-flex align-items-start mb-3">
+                <h2 class="fw-bold mb-0 me-2"><?php echo htmlspecialchars($dosen['name']); ?></h2>
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 1.5rem;"></i>
+              </div>
+
+              <div class="text-muted mb-2">
+                <i class="bi bi-geo-alt-fill me-2"></i>
+                <span>Universitas Komputer Indonesia</span>
+              </div>
+              <div class="text-muted mb-2">
+                <i class="bi bi-building-fill me-2"></i>
+                <span><?php echo htmlspecialchars($dosen['faculty']); ?></span>
+              </div>
+              <div class="text-muted mb-3">
+                <i class="bi bi-person-badge-fill me-2"></i>
+                <span>SINTA ID: <?php echo htmlspecialchars($dosen['nidn']); ?></span>
+              </div>
+
+              <div>
+                <span
+                  class="badge bg-light text-primary px-3 py-2"><?php echo htmlspecialchars($dosen['subject_research']); ?></span>
+              </div>
+            </div>
           </div>
 
-          <!-- Metrics Row -->
-          <div class="row g-3 text-center">
-            <div class="col-6 col-md-3">
-              <div class="metric-circle mx-auto mb-2"
-                style="width: 100px; height: 100px; background-color: #ffa726; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <i class="bi bi-person-circle text-white" style="font-size: 2rem;"></i>
+          <!-- Metrics Section -->
+          <div class="row g-4 mt-3">
+            <div class="col-6 col-md-3 text-center">
+              <div class="d-flex align-items-center justify-content-center mb-2">
+                <div class="metric-icon me-3 bg-primary"
+                  style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi bi-journal-text text-white" style="font-size: 1.5rem;"></i>
+                </div>
+                <div class="text-start">
+                  <h4 class="fw-bold mb-0"><?php echo $dosen['jumlah_jurnal']; ?></h4>
+                  <small class="text-muted">Jumlah Jurnal</small>
+                </div>
               </div>
-              <h4 class="fw-bold mb-0"><?php echo $dosen['jumlah_jurnal']; ?></h4>
-              <small class="text-muted">Jumlah<br>Jurnal</small>
             </div>
-            <div class="col-6 col-md-3">
-              <div class="metric-circle mx-auto mb-2"
-                style="width: 100px; height: 100px; background-color: #ffa726; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <i class="bi bi-journal-text text-white" style="font-size: 2rem;"></i>
+
+            <div class="col-6 col-md-3 text-center">
+              <div class="d-flex align-items-center justify-content-center mb-2">
+                <div class="metric-icon me-3 bg-primary"
+                  style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi bi-graph-up text-white" style="font-size: 1.5rem;"></i>
+                </div>
+                <div class="text-start">
+                  <h4 class="fw-bold mb-0"><?php echo number_format($dosen['sinta_score'], 2); ?></h4>
+                  <small class="text-muted">SINTA Score Overall</small>
+                </div>
               </div>
-              <h4 class="fw-bold mb-0"><?php echo $dosen['skor_relevansi']; ?></h4>
-              <small class="text-muted">Skor<br>Relevansi</small>
             </div>
-            <div class="col-6 col-md-3">
-              <div class="metric-circle mx-auto mb-2"
-                style="width: 100px; height: 100px; background-color: #ffa726; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <i class="bi bi-mortarboard text-white" style="font-size: 2rem;"></i>
+
+            <div class="col-6 col-md-3 text-center">
+              <div class="d-flex align-items-center justify-content-center mb-2">
+                <div class="metric-icon me-3 bg-primary"
+                  style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi bi-bar-chart text-white" style="font-size: 1.5rem;"></i>
+                </div>
+                <div class="text-start">
+                  <h4 class="fw-bold mb-0"><?php echo number_format($dosen['sinta_score_3yr'], 2); ?></h4>
+                  <small class="text-muted">SINTA Score 3Yr</small>
+                </div>
               </div>
-              <h4 class="fw-bold mb-0"><?php echo $dosen['h_index']; ?></h4>
-              <small class="text-muted">H-index</small>
             </div>
-            <div class="col-6 col-md-3">
-              <div class="metric-circle mx-auto mb-2"
-                style="width: 100px; height: 100px; background-color: #ffa726; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                <i class="bi bi-bookmark-check text-white" style="font-size: 2rem;"></i>
+
+            <div class="col-6 col-md-3 text-center">
+              <div class="d-flex align-items-center justify-content-center mb-2">
+                <div class="metric-icon me-3 bg-primary"
+                  style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi bi-building-fill text-white" style="font-size: 1.5rem;"></i>
+                </div>
+                <div class="text-start">
+                  <h4 class="fw-bold mb-0"><?php echo number_format($dosen['affil_score'], 2); ?></h4>
+                  <small class="text-muted">Affil Score</small>
+                </div>
               </div>
-              <h4 class="fw-bold mb-0"><?php echo $dosen['i10_index']; ?></h4>
-              <small class="text-muted">i10-index</small>
+            </div>
+
+            <div class="col-6 col-md-3 text-center">
+              <div class="d-flex align-items-center justify-content-center mb-2">
+                <div class="metric-icon me-3 bg-primary"
+                  style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi bi-building text-white" style="font-size: 1.5rem;"></i>
+                </div>
+                <div class="text-start">
+                  <h4 class="fw-bold mb-0"><?php echo number_format($dosen['affil_score_3yr'], 2); ?></h4>
+                  <small class="text-muted">Affil Score 3Yr</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6 col-md-3 text-center">
+              <div class="d-flex align-items-center justify-content-center mb-2">
+                <div class="metric-icon me-3 bg-primary"
+                  style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi bi-bookmark-star text-white" style="font-size: 1.5rem;"></i>
+                </div>
+                <div class="text-start">
+                  <h4 class="fw-bold mb-0"><?php echo $dosen['scopus_h_index']; ?></h4>
+                  <small class="text-muted">Scopus H-Index</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6 col-md-3 text-center">
+              <div class="d-flex align-items-center justify-content-center mb-2">
+                <div class="metric-icon me-3 bg-primary"
+                  style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi bi-google text-white" style="font-size: 1.5rem;"></i>
+                </div>
+                <div class="text-start">
+                  <h4 class="fw-bold mb-0"><?php echo $dosen['gs_h_index']; ?></h4>
+                  <small class="text-muted">GS H-Index</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6 col-md-3 text-center">
+              <div class="d-flex align-items-center justify-content-center mb-2">
+                <div class="metric-icon me-3 bg-primary"
+                  style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi bi-people-fill text-white" style="font-size: 1.5rem;"></i>
+                </div>
+                <div class="text-start">
+                  <h4 class="fw-bold mb-0"><?php echo $dosen['rasio_utama']; ?>:<?php echo $dosen['rasio_coauthor']; ?>
+                  </h4>
+                  <small class="text-muted">Rasio Penulis</small>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Column: Rasio Penulis -->
-    <div class="col-lg-5">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-body p-4 d-flex flex-column justify-content-center align-items-center text-center">
-          <h6 class="text-muted mb-3">Rasio Penulis</h6>
-          <h1 class="display-1 fw-bold mb-3"><?php echo $dosen['rasio_utama']; ?> :
-            <?php echo $dosen['rasio_coauthor']; ?>
-          </h1>
-          <p class="text-muted mb-0">Rasio Penulis Utama vs Co-Author</p>
         </div>
       </div>
     </div>

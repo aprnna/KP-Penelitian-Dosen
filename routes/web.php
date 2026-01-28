@@ -30,6 +30,15 @@ $router->get('auth/google/login', 'AuthController@googleLogin');
 $router->get('auth/google/register', 'AuthController@googleRegister');
 $router->get('auth/google/callback', 'AuthController@googleCallback');
 
+// Scraping routes
+$router->get('scraping', 'ScrapingController@index');
+$router->post('scraping/triggerScraping', 'ScrapingController@triggerScraping');
+$router->get('scraping/getJobs', 'ScrapingController@getJobs');
+$router->get('scraping/getJobDetails/{id}', 'ScrapingController@getJobDetails');
+$router->get('scraping/getJobProgress/{id}', 'ScrapingController@getJobProgress');
+$router->get('scraping/getLogs/{id}', 'ScrapingController@getLogs');
+$router->post('scraping/webhook', 'ScrapingController@webhook');
+
 
 // 404 handler
 $router->notFound(function () {
