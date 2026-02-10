@@ -105,10 +105,10 @@
 </div>
 
 <!-- Login Form -->
-<form action="<?php echo BASE_URL; ?>auth/doLogin" method="POST">
+<form action="<?php echo BASE_URL; ?>auth/login" method="POST">
   <div class="mb-3">
-    <label for="email" class="form-label form-label-custom">Email</label>
-    <input type="text" class="form-control form-control-custom" id="email" name="username" placeholder="Masukkan Email" required>
+    <label for="username" class="form-label form-label-custom">Username</label>
+    <input type="text" class="form-control form-control-custom" id="username" name="username" placeholder="Masukkan Username" required>
   </div>
 
   <div class="mb-3">

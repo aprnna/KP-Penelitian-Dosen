@@ -31,11 +31,14 @@ class Auth
     $this->db->bind(':username', $username);
     $user = $this->db->single();
 
-    if ($user && password_verify($password, $user->password)) {
+    // Plain text password check (for demo purposes only)
+    if ($user && $password == $user->password) {
       $this->setUserSession($user);
       $this->updateLastLogin($user->id);
       return true;
     }
+    //    // Hashed password check
+    //    if ($user && password_verify($password, $user->password)) {
 
     return false;
   }

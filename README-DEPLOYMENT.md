@@ -169,21 +169,21 @@ docker-compose exec -T db mysql -u root -p sister < backup.sql
 2. Ke **Settings** → **Secrets and variables** → **Actions**
 3. Tambahkan secrets berikut:
 
-| Secret Name | Deskripsi | Contoh |
-|-------------|-----------|--------|
-| `VPS_HOST` | IP atau domain VPS | `103.xxx.xxx.xxx` |
-| `VPS_USERNAME` | Username SSH | `root` atau `ubuntu` |
-| `VPS_SSH_KEY` | Private SSH key | (isi full private key) |
-| `VPS_PORT` | Port SSH | `22` |
-| `VPS_PROJECT_PATH` | Path project di VPS | `/var/www/kp-penelitian-dosen` |
-| `DB_USER` | Username database | `root` |
-| `DB_PASS` | Password database | `your-strong-password` |
-| `DB_NAME` | Nama database | `kp-penelitian-dosen` |
-| `APP_NAME` | Nama aplikasi | `KP Penelitian Dosen` |
-| `BASE_URL` | URL aplikasi | `https://yourdomain.com/` |
-| `GOOGLE_CLIENT_ID` | Google OAuth Client ID | `xxx.apps.googleusercontent.com` |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth Secret | `GOCSPX-xxx` |
-| `GOOGLE_REDIRECT_URI` | Google OAuth Callback | `https://yourdomain.com/auth/google/callback` |
+| Secret Name            | Deskripsi              | Contoh                                        |
+| ---------------------- | ---------------------- | --------------------------------------------- |
+| `VPS_HOST`             | IP atau domain VPS     | `103.xxx.xxx.xxx`                             |
+| `VPS_USERNAME`         | Username SSH           | `root` atau `ubuntu`                          |
+| `VPS_SSH_KEY`          | Private SSH key        | (isi full private key)                        |
+| `VPS_PORT`             | Port SSH               | `22`                                          |
+| `VPS_PROJECT_PATH`     | Path project di VPS    | `/var/www/kp-penelitian-dosen`                |
+| `DB_USER`              | Username database      | `root`                                        |
+| `DB_PASS`              | Password database      | `your-strong-password`                        |
+| `DB_NAME`              | Nama database          | `kp-penelitian-dosen`                         |
+| `APP_NAME`             | Nama aplikasi          | `KP Penelitian Dosen`                         |
+| `BASE_URL`             | URL aplikasi           | `https://yourdomain.com/`                     |
+| `GOOGLE_CLIENT_ID`     | Google OAuth Client ID | `xxx.apps.googleusercontent.com`              |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Secret    | `GOCSPX-xxx`                                  |
+| `GOOGLE_REDIRECT_URI`  | Google OAuth Callback  | `https://yourdomain.com/auth/google/callback` |
 
 ### Generate SSH Key untuk Deployment
 

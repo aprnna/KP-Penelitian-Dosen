@@ -14,41 +14,91 @@
       <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
           <!-- Profile Section -->
-          <div class="row mb-4">
-            <!-- Profile Photo -->
-            <div class="col-md-2 text-center mb-3 mb-md-0">
-              <div class="profile-photo mx-auto"
-                style="width: 140px; height: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
+          <div class="row">
+            <div class="col-md-8 row mb-4">
+              <!-- Profile Photo -->
+              <div class="col-md-3 text-center mb-3 mb-md-0">
+                <div class="profile-photo mx-auto"
+                  style="width: 140px; height: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                  <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
+                </div>
+              </div>
+
+              <!-- Profile Info -->
+              <div class="col-md-8">
+                <div class="d-flex align-items-start mb-3">
+                  <h2 class="fw-bold mb-0 me-2"><?php echo htmlspecialchars($dosen['name']); ?></h2>
+                  <i class="bi bi-check-circle-fill text-success" style="font-size: 1.5rem;"></i>
+                </div>
+
+                <div class="text-muted mb-2">
+                  <i class="bi bi-geo-alt-fill me-2"></i>
+                  <span>Universitas Komputer Indonesia</span>
+                </div>
+                <div class="text-muted mb-2">
+                  <i class="bi bi-building-fill me-2"></i>
+                  <span><?php echo htmlspecialchars($dosen['faculty']); ?></span>
+                </div>
+                <div class="text-muted mb-3">
+                  <i class="bi bi-person-badge-fill me-2"></i>
+                  <span>SINTA ID: <?php echo htmlspecialchars($dosen['nidn']); ?></span>
+                </div>
+
+                <div>
+                  <span
+                    class="badge bg-light text-primary px-3 py-2"><?php echo htmlspecialchars($dosen['subject_research']); ?></span>
+                </div>
               </div>
             </div>
+            <div class="col-md-4">
+              <div class="card bg-light border-0 rounded-4 h-100">
+                <div class="card-body p-3">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0 text-dark">Rasio Kontribusi Penulis</h6>
+                    <select class="form-select form-select-sm border-0 shadow-sm" id="statsYear" style="width: 130px; border-radius: 8px;" onchange="filterStats(this.value)">
+                      <?php
+                      $currentYear = date('Y');
+                      $years = [];
+                      for ($i = $currentYear; $i >= $currentYear - 4; $i--) {
+                        $years[] = $i;
+                      }
 
-            <!-- Profile Info -->
-            <div class="col-md-10">
-              <div class="d-flex align-items-start mb-3">
-                <h2 class="fw-bold mb-0 me-2"><?php echo htmlspecialchars($dosen['name']); ?></h2>
-                <i class="bi bi-check-circle-fill text-success" style="font-size: 1.5rem;"></i>
-              </div>
+                      foreach ($years as $year) {
+                        $selected = ($year == $statsYear) ? 'selected' : '';
+                        echo "<option value='$year' $selected>$year</option>";
+                      }
+                      ?>
+                      <option value="Semua Tahun" <?php echo ($statsYear == 'Semua Tahun') ? 'selected' : ''; ?>>Semua Tahun</option>
+                    </select>
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <div class="p-2 bg-white rounded-3 border-start border-4 border-primary shadow-sm">
+                        <div class="small text-muted mb-1">Penulis Utama</div>
+                        <div class="h5 fw-bold mb-0 text-primary"><?php echo $dosen['rasio_utama']; ?>%</div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="p-2 bg-white rounded-3 border-start border-4 border-info shadow-sm">
+                        <div class="small text-muted mb-1">Co-Author</div>
+                        <div class="h5 fw-bold mb-0 text-info"><?php echo $dosen['rasio_coauthor']; ?>%</div>
+                      </div>
+                    </div>
+                  </div>
 
-              <div class="text-muted mb-2">
-                <i class="bi bi-geo-alt-fill me-2"></i>
-                <span>Universitas Komputer Indonesia</span>
-              </div>
-              <div class="text-muted mb-2">
-                <i class="bi bi-building-fill me-2"></i>
-                <span><?php echo htmlspecialchars($dosen['faculty']); ?></span>
-              </div>
-              <div class="text-muted mb-3">
-                <i class="bi bi-person-badge-fill me-2"></i>
-                <span>SINTA ID: <?php echo htmlspecialchars($dosen['nidn']); ?></span>
-              </div>
-
-              <div>
-                <span
-                  class="badge bg-light text-primary px-3 py-2"><?php echo htmlspecialchars($dosen['subject_research']); ?></span>
+                  <div class="mt-3 small text-muted">
+                    <i class="bi bi-info-circle-fill me-1"></i>
+                    <?php if ($statsYear == 'Semua Tahun'): ?>
+                      Berdasarkan seluruh total publikasi yang tercatat.
+                    <?php else: ?>
+                      Berdasarkan publikasi pada tahun <strong><?php echo $statsYear; ?></strong>.
+                    <?php endif; ?>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
 
           <!-- Metrics Section -->
           <div class="row g-4 mt-3">
@@ -143,19 +193,6 @@
               </div>
             </div>
 
-            <div class="col-6 col-md-3 text-center">
-              <div class="d-flex align-items-center justify-content-center mb-2">
-                <div class="metric-icon me-3 bg-primary"
-                  style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                  <i class="bi bi-people-fill text-white" style="font-size: 1.5rem;"></i>
-                </div>
-                <div class="text-start">
-                  <h4 class="fw-bold mb-0"><?php echo $dosen['rasio_utama']; ?>:<?php echo $dosen['rasio_coauthor']; ?>
-                  </h4>
-                  <small class="text-muted">Rasio Penulis</small>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -170,17 +207,21 @@
           <!-- Filter Tabs -->
           <div class="border-bottom px-4 pt-3">
             <ul class="nav nav-pills mb-3" id="publicationType" role="tablist">
-              <?php foreach ($categorizedPublications as $type => $catInfo): ?>
+              <?php foreach ($categorizedPublications as $journal => $catInfo): ?>
                 <?php
-                $sanitizedId = str_replace('-', '_', $type);
-                $isActive = ($activeTab === $type);
-                // Prettify type label (e.g. journal-article -> Journal Article)
-                $label = ucwords(str_replace('-', ' ', $type));
+                $sanitizedId = 'j_' . substr(md5($journal), 0, 8);
+                $isActive = ($activeTab === $journal);
+                // Label is the journal title
+                $label = $journal;
                 ?>
                 <li class="nav-item" role="presentation">
                   <button class="nav-link <?php echo $isActive ? 'active' : ''; ?>" id="<?php echo $sanitizedId; ?>-tab"
-                    data-bs-toggle="pill" data-bs-target="#tab-<?php echo $sanitizedId; ?>" type="button" role="tab">
-                    <?php echo $label; ?> (<?php echo $catInfo['totalCount']; ?>)
+                    data-bs-toggle="pill" data-bs-target="#tab-<?php echo $sanitizedId; ?>" type="button" role="tab"
+                    title="<?php echo htmlspecialchars($journal); ?>">
+                    <span class="text-truncate d-inline-block" style="max-width: 200px;">
+                      <?php echo htmlspecialchars($label); ?>
+                    </span>
+                    (<?php echo $catInfo['totalCount']; ?>)
                   </button>
                 </li>
               <?php endforeach; ?>
@@ -196,10 +237,10 @@
               </div>
             <?php endif; ?>
 
-            <?php foreach ($categorizedPublications as $type => $catInfo): ?>
+            <?php foreach ($categorizedPublications as $journal => $catInfo): ?>
               <?php
-              $sanitizedId = str_replace('-', '_', $type);
-              $isActive = ($activeTab === $type);
+              $sanitizedId = 'j_' . substr(md5($journal), 0, 8);
+              $isActive = ($activeTab === $journal);
               ?>
               <div class="tab-pane fade <?php echo $isActive ? 'show active' : ''; ?>"
                 id="tab-<?php echo $sanitizedId; ?>" role="tabpanel">
@@ -213,10 +254,10 @@
                     <p class="text-muted small mb-2"><?php echo htmlspecialchars($pub['program_studi']); ?></p>
                     <div class="mb-2">
                       <span class="text-primary fw-bold small me-3">
-                        <?php echo htmlspecialchars($pub['journal']); ?>
+                        <?php echo htmlspecialchars($pub['journal_title']); ?>
                       </span>
                       <span class="badge bg-primary">
-                        <?php echo htmlspecialchars($pub['journal_name']); ?>
+                        <?php echo htmlspecialchars($pub['publisher']); ?>
                       </span>
                     </div>
                     <div class="d-flex gap-3 small text-muted">
@@ -236,12 +277,12 @@
                 <!-- Pagination for this type -->
                 <?php if ($catInfo['totalPages'] > 1): ?>
                   <div class="mt-4">
-                    <nav aria-label="Page navigation for <?php echo $type; ?>">
+                    <nav aria-label="Page navigation for <?php echo htmlspecialchars($journal); ?>">
                       <ul class="pagination pagination-sm justify-content-center mb-0">
                         <!-- First Page -->
                         <li class="page-item <?php echo ($catInfo['currentPage'] <= 1) ? 'disabled' : ''; ?>">
                           <a class="page-link"
-                            href="?page_id=<?php echo $dosen['id']; ?>&tab=<?php echo $type; ?>&<?php echo $catInfo['paramKey']; ?>=1"
+                            href="?page_id=<?php echo $dosen['id']; ?>&tab=<?php echo urlencode($journal); ?>&<?php echo $catInfo['paramKey']; ?>=1"
                             aria-label="First">
                             <span aria-hidden="true">&laquo; First</span>
                           </a>
@@ -250,7 +291,7 @@
                         <!-- Previous Page -->
                         <li class="page-item <?php echo ($catInfo['currentPage'] <= 1) ? 'disabled' : ''; ?>">
                           <a class="page-link"
-                            href="?page_id=<?php echo $dosen['id']; ?>&tab=<?php echo $type; ?>&<?php echo $catInfo['paramKey']; ?>=<?php echo $catInfo['currentPage'] - 1; ?>"
+                            href="?page_id=<?php echo $dosen['id']; ?>&tab=<?php echo urlencode($journal); ?>&<?php echo $catInfo['paramKey']; ?>=<?php echo $catInfo['currentPage'] - 1; ?>"
                             aria-label="Previous">
                             <span aria-hidden="true">&lsaquo;</span>
                           </a>
@@ -268,7 +309,7 @@
                         for ($i = $startPage; $i <= $endPage; $i++): ?>
                           <li class="page-item <?php echo ($i == $catInfo['currentPage']) ? 'active' : ''; ?>">
                             <a class="page-link"
-                              href="?page_id=<?php echo $dosen['id']; ?>&tab=<?php echo $type; ?>&<?php echo $catInfo['paramKey']; ?>=<?php echo $i; ?>"><?php echo $i; ?></a>
+                              href="?page_id=<?php echo $dosen['id']; ?>&tab=<?php echo urlencode($journal); ?>&<?php echo $catInfo['paramKey']; ?>=<?php echo $i; ?>"><?php echo $i; ?></a>
                           </li>
                         <?php endfor; ?>
 
@@ -276,7 +317,7 @@
                         <li
                           class="page-item <?php echo ($catInfo['currentPage'] >= $catInfo['totalPages']) ? 'disabled' : ''; ?>">
                           <a class="page-link"
-                            href="?page_id=<?php echo $dosen['id']; ?>&tab=<?php echo $type; ?>&<?php echo $catInfo['paramKey']; ?>=<?php echo $catInfo['currentPage'] + 1; ?>"
+                            href="?page_id=<?php echo $dosen['id']; ?>&tab=<?php echo urlencode($journal); ?>&<?php echo $catInfo['paramKey']; ?>=<?php echo $catInfo['currentPage'] + 1; ?>"
                             aria-label="Next">
                             <span aria-hidden="true">&rsaquo;</span>
                           </a>
@@ -286,7 +327,7 @@
                         <li
                           class="page-item <?php echo ($catInfo['currentPage'] >= $catInfo['totalPages']) ? 'disabled' : ''; ?>">
                           <a class="page-link"
-                            href="?page_id=<?php echo $dosen['id']; ?>&tab=<?php echo $type; ?>&<?php echo $catInfo['paramKey']; ?>=<?php echo $catInfo['totalPages']; ?>"
+                            href="?page_id=<?php echo $dosen['id']; ?>&tab=<?php echo urlencode($journal); ?>&<?php echo $catInfo['paramKey']; ?>=<?php echo $catInfo['totalPages']; ?>"
                             aria-label="Last">
                             <span aria-hidden="true">Last &raquo;</span>
                           </a>
@@ -312,6 +353,23 @@
     padding: 0.5rem 1.5rem;
     font-weight: 500;
     margin-right: 0.5rem;
+    max-width: 250px;
+    white-space: nowrap;
+  }
+
+  .nav-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .nav-pills::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .nav-pills::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
   }
 
   .nav-pills .nav-link.active {
@@ -332,3 +390,11 @@
     text-decoration: underline !important;
   }
 </style>
+
+<script>
+  function filterStats(year) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('statsYear', year);
+    window.location.href = url.toString();
+  }
+</script>

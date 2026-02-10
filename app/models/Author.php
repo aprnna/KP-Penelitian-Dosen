@@ -131,8 +131,7 @@ class Author
     return $this->db->resultSet();
   }
 
-  // Get top authors based on Growth (Last Year Count - First Year Count)
-  // This is a bit complex in SQL, doing a simplified version:
+  // Get top authors 
   // Count in End Year, Count in Start Year, subtract.
   // Get top authors based on Publication Count in a Date Range (for Trend Chart)
   public function getTopAuthorsByRangeCount($limit = 5, $startYear, $endYear, $faculty = null)
@@ -167,47 +166,6 @@ class Author
     return $this->db->resultSet();
   }
 
-  // Get top authors based on Growth (Last Year Count - First Year Count)
-  // This is a bit complex in SQL, doing a simplified version:
-  // Count in End Year, Count in Start Year, subtract.
-  public function getTopAuthorsByGrowth($limit = 5, $startYear, $endYear, $faculty = null)
-  {
-    $sql = '
-        SELECT 
-            a.id_sinta, 
-            a.fullname,
-            (SELECT COUNT(*) 
-             FROM author_article aa2 
-             JOIN articles ar2 ON aa2.id_article = ar2.id_article 
-             WHERE aa2.id_sinta = a.id_sinta AND ar2.published LIKE :end_year
-             AND ar2.indexed_date_time IS NOT NULL AND ar2.indexed_date_time != ""
-            ) as end_count,
-            (SELECT COUNT(*) 
-             FROM author_article aa3 
-             JOIN articles ar3 ON aa3.id_article = ar3.id_article 
-             WHERE aa3.id_sinta = a.id_sinta AND ar3.published LIKE :start_year
-             AND ar3.indexed_date_time IS NOT NULL AND ar3.indexed_date_time != ""
-            ) as start_count
-        FROM authors a
-      ';
-
-    if ($faculty && $faculty !== 'Semua Fakultas') {
-      $sql .= ' WHERE a.faculty LIKE :faculty ';
-    }
-
-    $sql .= ' ORDER BY (end_count - start_count) DESC LIMIT :limit';
-
-    $this->db->query($sql);
-    $this->db->bind(':end_year', "$endYear%");
-    $this->db->bind(':start_year', "$startYear%");
-
-    if ($faculty && $faculty !== 'Semua Fakultas') {
-      $this->db->bind(':faculty', "%$faculty%");
-    }
-
-    $this->db->bind(':limit', $limit);
-    return $this->db->resultSet();
-  }
   // Get Top Authors filtered by Faculty and Year (Journal Count) for Ranked List
   public function getTopAuthorsByPublicationCount($limit = 10, $faculty = null, $year = null)
   {
@@ -247,45 +205,6 @@ class Author
     $this->db->bind(':limit', $limit);
 
     return $this->db->resultSet();
-  }
-
-  // Get Top 1 Representative Author per Faculty (Max Impact) and return Top Faculties
-  public function getTopImpactFacultyRepresentatives($limit = 5)
-  {
-    // Logic: For each faculty, find the max Sinta Score.
-    // Then find the author who has that max score.
-    // Return top faculties by their max score.
-
-    // Since MySQL < 8.0 doesn't support easy window functions, we use a join trick or simple group max
-    // Assuming sinta_score_v3_overall is the metric.
-
-    $this->db->query('
-        SELECT a.faculty as faculty, MAX(a.sinta_score_overall) as max_score
-        FROM authors a
-        WHERE a.faculty IS NOT NULL AND a.faculty != ""
-        GROUP BY a.faculty
-        ORDER BY max_score DESC
-        LIMIT :limit
-      ');
-    $this->db->bind(':limit', $limit);
-    $topFaculties = $this->db->resultSet();
-
-    $results = [];
-    foreach ($topFaculties as $fac) {
-      // Get the author for this faculty and score
-      $this->db->query('
-            SELECT * FROM authors 
-            WHERE faculty = :faculty AND sinta_score_overall = :score
-            LIMIT 1
-          ');
-      $this->db->bind(':faculty', $fac->faculty);
-      $this->db->bind(':score', $fac->max_score);
-      $author = $this->db->single();
-      if ($author) {
-        $results[] = $author;
-      }
-    }
-    return $results;
   }
 
   // Get top 5 authors by impact (Sinta Score) for specific faculty

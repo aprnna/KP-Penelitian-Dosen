@@ -23,24 +23,25 @@ class DashboardController extends Controller
 
     $users = $this->userModel->getAllUsers();
 
+    $currentYear = date('Y');
+    $defaultFaculty = $faculties[0]->faculty ?? null;
+    $defaultYear = $currentYear - 1;
+
     // Models
     $authorModel = $this->model('Author');
     $articleModel = $this->model('Article');
 
-    // Real data for dashboard - default to current year
-    $currentYear = date('Y');
     $statsData = [
       'total_dosen' => $authorModel->countAuthors(),
-      'total_publikasi' => $articleModel->countTotalArticles($currentYear),
-      'total_terindeksasi' => $articleModel->countIndexedArticles($currentYear)
+      'total_publikasi' => $articleModel->countTotalArticles($defaultYear),
+      'total_terindeksasi' => $articleModel->countIndexedArticles($defaultYear)
     ];
 
     // Filter Parameters for Ranked List (Default to current year)
     $rankFaculty = $_GET['rank_faculty'] ?? 'Semua Fakultas';
-    $rankYear = $_GET['rank_year'] ?? date('Y');
+    $rankYear = $_GET['rank_year'] ?? date('Y') - 1;
 
     // Get Filtered Top Authors (Ranked List)
-    // Note: User requested "jumlah publikasi jurnal terindeks terbanyak"
     $topAuthors = $authorModel->getTopAuthorsByPublicationCount(10, $rankFaculty, $rankYear);
 
     $topDosenList = [];
@@ -89,7 +90,9 @@ class DashboardController extends Controller
       'stats' => $statsData,
       'topDosen' => $topDosenList,
       'charts' => $chartData,
-      'faculties' => $faculties
+      'faculties' => $faculties,
+      'defaultYear' => $defaultYear,
+      'defaultFaculty' => $defaultFaculty
     ];
 
     $this->render('dashboard/index', $data, 'main');
@@ -101,16 +104,18 @@ class DashboardController extends Controller
   {
     $authorModel = $this->model('Author');
     $articleModel = $this->model('Article');
+    $faculties = $authorModel->getUniqueFaculties();
+    $defaultFaculty = $faculties[0]->faculty ?? null;
+    $defaultYear = date('Y') - 1;
 
     // 1. Productivity Trend (New Logic: Top 5 by Count in Last 5 Years)
-    $currentYear = (int) date('Y');
-    $startYear = $currentYear - 4;
-    $topTrendAuthors = $authorModel->getTopAuthorsByRangeCount(5, $startYear, $currentYear, null);
+    $startYear = $defaultYear - 4;
+    $topTrendAuthors = $authorModel->getTopAuthorsByRangeCount(5, $startYear, $defaultYear, null);
     $productivityData = [];
     $allYears = [];
 
     // Build X-axis for last 5 years
-    for ($y = $startYear; $y <= $currentYear; $y++) {
+    for ($y = $startYear; $y <= $defaultYear; $y++) {
       $allYears[] = (string) $y;
     }
 
@@ -141,7 +146,7 @@ class DashboardController extends Controller
 
 
     // 2. Faculty Distribution (Default: this Year)
-    $facultyStats = $authorModel->getFacultyPublicationStats(date('Y'));
+    $facultyStats = $authorModel->getFacultyPublicationStats($defaultYear);
     $treemapData = [];
     foreach ($facultyStats as $stat) {
       $treemapData[] = [
@@ -151,7 +156,7 @@ class DashboardController extends Controller
     }
 
     // 3. Top Journals (Default: this Year)
-    $topJournals = $articleModel->getTopJournals(5, null, date('Y'));
+    $topJournals = $articleModel->getTopJournals(5, $defaultFaculty, $defaultYear);
     $barChart1 = [
       'labels' => [],
       'data' => []
@@ -162,14 +167,13 @@ class DashboardController extends Controller
     }
 
     // 4. Publication Type Trend (5 Years)
-    $currentYear = (int) date('Y');
-    $startYear = $currentYear - 4;
-    $typeStats = $articleModel->getArticleTypeStats($startYear, $currentYear, null); // null faculty
+    $startYear = $defaultYear - 4;
+    $typeStats = $articleModel->getArticleTypeStats($startYear, $defaultYear, null); // null faculty
 
     $types = [];
     $typeDataRaw = [];
     $allYears = [];
-    for ($y = $startYear; $y <= date('Y'); $y++)
+    for ($y = $startYear; $y <= $defaultYear; $y++)
       $allYears[] = (string) $y;
 
     foreach ($typeStats as $ts) {
@@ -196,7 +200,7 @@ class DashboardController extends Controller
     }
 
     // 5. Top Impact Authors (New Chart)
-    $topImpactAuthors = $authorModel->getTopAuthorsByFaculty(null, null, 5); // Default All Faculties, All Years
+    $topImpactAuthors = $authorModel->getTopAuthorsByFaculty($defaultFaculty, $defaultYear, 5);
     $impactChart = [
       'labels' => [],
       'data' => []
@@ -212,7 +216,7 @@ class DashboardController extends Controller
         'datasets' => $productivityData
       ],
       'treemap' => $treemapData,
-      'bar1' => $barChart1, // Top Journals
+      'bar1' => $barChart1,
       'impact' => $impactChart,
       'pubType' => $typeChart
     ];
@@ -225,7 +229,7 @@ class DashboardController extends Controller
 
     $type = $_GET['type'] ?? '';
     $faculty = $_GET['faculty'] ?? null;
-    $year = $_GET['year'] ?? null; // Default null (All Years) from JS empty string
+    $year = $_GET['year'] ?? null;
 
     if ($faculty === 'Semua Fakultas')
       $faculty = null;
@@ -277,7 +281,6 @@ class DashboardController extends Controller
       $productivityData = [];
       $allYears = [];
 
-      // Logic: Top 5 by Count in Range
       // Year from filter or Current Year
       $endYear = $year ? (int) $year : (int) date('Y');
       $startYear = $endYear - 4;

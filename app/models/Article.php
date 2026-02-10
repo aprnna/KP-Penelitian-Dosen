@@ -221,16 +221,25 @@ class Article
   }
 
   // Get ratio of Main Author vs Co-Author
-  public function getAuthorRoleRatios($authorId)
+  public function getAuthorRoleRatios($authorId, $year = null)
   {
-    $this->db->query('
+    $sql = '
       SELECT a.authors, au.fullname
       FROM articles a
       JOIN author_article aa ON a.id_article = aa.id_article
       JOIN authors au ON aa.id_sinta = au.id_sinta
       WHERE aa.id_sinta = :author_id
-    ');
+    ';
+
+    if ($year && $year !== 'Semua Tahun') {
+      $sql .= ' AND a.published LIKE :year ';
+    }
+
+    $this->db->query($sql);
     $this->db->bind(':author_id', $authorId);
+    if ($year && $year !== 'Semua Tahun') {
+      $this->db->bind(':year', "$year%");
+    }
     $articles = $this->db->resultSet();
 
     $utama = 0;
@@ -262,49 +271,69 @@ class Article
     ];
   }
 
-  // Get unique article types for a specific author
-  public function getUniqueTypesByAuthor($authorId)
+  // Get unique journals (short title) for a specific author
+  public function getUniqueJournalsByAuthor($authorId)
   {
     $this->db->query('
-      SELECT DISTINCT a.type 
+      SELECT DISTINCT COALESCE(a.short_journal_title, "Other") as journal_title
       FROM articles a
       JOIN author_article aa ON a.id_article = aa.id_article
-      WHERE aa.id_sinta = :author_id AND a.type IS NOT NULL AND a.type != ""
-      ORDER BY a.type ASC
+      WHERE aa.id_sinta = :author_id
+      ORDER BY journal_title ASC
     ');
     $this->db->bind(':author_id', $authorId);
     return $this->db->resultSet();
   }
 
-  // Get paginated articles by type for a specific author
-  public function getArticlesByTypeAndAuthor($authorId, $type, $limit, $offset)
+  // Get paginated articles by journal (short title) for a specific author
+  public function getArticlesByJournalAndAuthor($authorId, $journal, $limit, $offset)
   {
-    $this->db->query('
-      SELECT a.* 
+    $sql = '
+      SELECT a.*
       FROM articles a
       JOIN author_article aa ON a.id_article = aa.id_article
-      WHERE aa.id_sinta = :author_id AND a.type = :type
-      ORDER BY a.published DESC
-      LIMIT :limit OFFSET :offset
-    ');
+      WHERE aa.id_sinta = :author_id
+    ';
+
+    if ($journal === 'Other') {
+      $sql .= ' AND (a.short_journal_title IS NULL OR a.short_journal_title = "") ';
+    } else {
+      $sql .= ' AND a.short_journal_title = :journal ';
+    }
+
+    $sql .= ' ORDER BY a.published DESC LIMIT :limit OFFSET :offset ';
+
+    $this->db->query($sql);
     $this->db->bind(':author_id', $authorId);
-    $this->db->bind(':type', $type);
+    if ($journal !== 'Other') {
+      $this->db->bind(':journal', $journal);
+    }
     $this->db->bind(':limit', $limit);
     $this->db->bind(':offset', $offset);
     return $this->db->resultSet();
   }
 
-  // Count articles by type for a specific author
-  public function countArticlesByTypeAndAuthor($authorId, $type)
+  // Count articles by journal (short title) for a specific author
+  public function countArticlesByJournalAndAuthor($authorId, $journal)
   {
-    $this->db->query('
-      SELECT COUNT(*) as total 
+    $sql = '
+      SELECT COUNT(*) as total
       FROM articles a
       JOIN author_article aa ON a.id_article = aa.id_article
-      WHERE aa.id_sinta = :author_id AND a.type = :type
-    ');
+      WHERE aa.id_sinta = :author_id
+    ';
+
+    if ($journal === 'Other') {
+      $sql .= ' AND (a.short_journal_title IS NULL OR a.short_journal_title = "") ';
+    } else {
+      $sql .= ' AND a.short_journal_title = :journal ';
+    }
+
+    $this->db->query($sql);
     $this->db->bind(':author_id', $authorId);
-    $this->db->bind(':type', $type);
+    if ($journal !== 'Other') {
+      $this->db->bind(':journal', $journal);
+    }
     $result = $this->db->single();
     return $result->total;
   }

@@ -33,7 +33,7 @@
                 <?php
                 $currentYear = date('Y');
                 for ($i = $currentYear; $i >= $currentYear - 4; $i--) {
-                  $selected = ($i == $currentYear) ? 'selected' : '';
+                  $selected = ($i == $defaultYear) ? 'selected' : '';
                   echo "<option value='$i' $selected>$i</option>";
                 }
                 ?>
@@ -110,7 +110,8 @@
                 <?php
                 $currentYear = date('Y');
                 for ($i = $currentYear; $i >= $currentYear - 4; $i--) {
-                  echo "<option value='$i'>$i</option>";
+                  $selected = ($i == $defaultYear) ? 'selected' : '';
+                  echo "<option value='$i' $selected>$i</option>";
                 }
                 ?>
               </select>
@@ -133,8 +134,8 @@
           <select class="form-select form-select-sm" id="treemapYear" style="width: 130px;">
             <?php
             $currentYear = date('Y');
-            for ($i = $currentYear; $i >= $currentYear - 5; $i--) {
-              $selected = ($i == $currentYear) ? 'selected' : '';
+            for ($i = $currentYear; $i >= $currentYear - 4; $i--) {
+              $selected = ($i == $defaultYear) ? 'selected' : '';
               echo "<option value='$i' $selected>$i</option>";
             }
             ?>
@@ -167,7 +168,8 @@
                 <?php
                 $currentYear = date('Y');
                 for ($i = $currentYear; $i >= $currentYear - 4; $i--) {
-                  echo "<option value='$i'>$i</option>";
+                  $selected = ($i == $defaultYear) ? 'selected' : '';
+                  echo "<option value='$i' $selected>$i</option>";
                 }
                 ?>
               </select>
@@ -191,18 +193,19 @@
                 </div>
                 <div class="d-flex gap-2">
                   <select class="form-select form-select-sm" id="journalFaculty" style="width: 150px;">
-                    <option value="Semua Fakultas">Semua Fakultas</option>
                     <?php foreach ($faculties as $fac): ?>
-                      <option value="<?php echo htmlspecialchars($fac->faculty); ?>">
+                      <option value="<?php echo htmlspecialchars($fac->faculty); ?>" <?php if ($fac->faculty == $defaultFaculty) echo 'selected'; ?>>
                         <?php echo htmlspecialchars($fac->faculty); ?>
                       </option>
                     <?php endforeach; ?>
+                    <option value="Semua Fakultas">Semua Fakultas</option>
                   </select>
                   <select class="form-select form-select-sm" id="journalYear" style="width: 100px;">
                     <?php
                     $currentYear = date('Y');
                     for ($i = $currentYear; $i >= $currentYear - 4; $i--) {
-                      echo "<option value='$i'>$i</option>";
+                      $selected = ($i == $defaultYear) ? 'selected' : '';
+                      echo "<option value='$i' $selected>$i</option>";
                     }
                     ?>
                     <option value="">Semua Tahun</option>
@@ -228,12 +231,12 @@
                 </div>
                 <div class="d-flex gap-2">
                   <select class="form-select form-select-sm" id="impactFaculty" style="width: 150px;">
-                    <option value="Semua Fakultas">Semua Fakultas</option>
                     <?php foreach ($faculties as $fac): ?>
-                      <option value="<?php echo htmlspecialchars($fac->faculty); ?>">
+                      <option value="<?php echo htmlspecialchars($fac->faculty); ?>" <?php if ($fac->faculty == $defaultFaculty) echo 'selected'; ?>>
                         <?php echo htmlspecialchars($fac->faculty); ?>
                       </option>
                     <?php endforeach; ?>
+                    <option value="Semua Fakultas">Semua Fakultas</option>
                   </select>
                 </div>
               </div>
@@ -263,7 +266,7 @@
               <?php
               $currentYear = date('Y');
               for ($i = $currentYear; $i >= $currentYear - 4; $i--) {
-                $selected = ($i == $currentYear) ? 'selected' : '';
+                $selected = ($i == $defaultYear) ? 'selected' : '';
                 echo "<option value='$i' $selected>$i</option>";
               }
               ?>
@@ -300,7 +303,7 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', function() {
     const fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
     const chartData = <?php echo json_encode($charts); ?>;
     const baseUrl = '<?php echo BASE_URL; ?>';
@@ -343,13 +346,36 @@
 
       multiLineChartInstance = new Chart(ctx, {
         type: 'line',
-        data: { labels: data.years, datasets: datasets },
+        data: {
+          labels: data.years,
+          datasets: datasets
+        },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { position: 'bottom', labels: { font: { family: fontFamily, size: 11 }, usePointStyle: true, padding: 15 } },
-            tooltip: { titleFont: { family: fontFamily, size: 13, weight: 'bold' }, bodyFont: { family: fontFamily, size: 12 } },
+            legend: {
+              position: 'bottom',
+              labels: {
+                font: {
+                  family: fontFamily,
+                  size: 11
+                },
+                usePointStyle: true,
+                padding: 15
+              }
+            },
+            tooltip: {
+              titleFont: {
+                family: fontFamily,
+                size: 13,
+                weight: 'bold'
+              },
+              bodyFont: {
+                family: fontFamily,
+                size: 12
+              }
+            },
             datalabels: {
               anchor: 'end',
               align: 'top',
@@ -376,10 +402,16 @@
             y: {
               display: false,
               beginAtZero: false,
-              grid: { display: true, color: 'rgba(0,0,0,0.05)' },
+              grid: {
+                display: true,
+                color: 'rgba(0,0,0,0.05)'
+              },
             },
             x: {
-              grid: { display: true, color: 'rgba(0,0,0,0.05)' },
+              grid: {
+                display: true,
+                color: 'rgba(0,0,0,0.05)'
+              },
             }
           }
         }
@@ -433,7 +465,11 @@
                 const value = ctx.raw.v;
                 return value === maxValue ? '#ffffff' : '#1f2937';
               },
-              font: { family: fontFamily, size: 12, weight: 'bold' },
+              font: {
+                family: fontFamily,
+                size: 12,
+                weight: 'bold'
+              },
               formatter: (ctx) => ctx.raw._data.name + '\n' + ctx.raw.v
             }
           }]
@@ -442,9 +478,19 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: false },
+            legend: {
+              display: false
+            },
             tooltip: {
-              titleFont: { family: fontFamily, size: 13, weight: 'bold' }, bodyFont: { family: fontFamily, size: 12 },
+              titleFont: {
+                family: fontFamily,
+                size: 13,
+                weight: 'bold'
+              },
+              bodyFont: {
+                family: fontFamily,
+                size: 12
+              },
               callbacks: {
                 title: (ctx) => ctx[0].raw._data.name,
                 label: (ctx) => {
@@ -481,7 +527,10 @@
         }
       });
     };
-    initTreemapChart(chartData.treemap.map(d => ({ ...d, percentage: '' })));
+    initTreemapChart(chartData.treemap.map(d => ({
+      ...d,
+      percentage: ''
+    })));
 
 
     // --- 3. Pub Type Chart ---
@@ -526,10 +575,21 @@
             }
           },
           plugins: {
-            tooltip: { titleFont: { family: fontFamily, size: 13, weight: 'bold' } },
+            tooltip: {
+              titleFont: {
+                family: fontFamily,
+                size: 13,
+                weight: 'bold'
+              }
+            },
             legend: {
               position: 'bottom',
-              labels: { font: { family: fontFamily, size: 12 } }
+              labels: {
+                font: {
+                  family: fontFamily,
+                  size: 12
+                }
+              }
             },
             datalabels: {
               anchor: 'end',
@@ -557,10 +617,14 @@
             y: {
               display: false,
               beginAtZero: false,
-              grid: { color: 'rgba(0,0,0,0.05)' },
+              grid: {
+                color: 'rgba(0,0,0,0.05)'
+              },
             },
             x: {
-              grid: { color: 'rgba(0,0,0,0.05)' },
+              grid: {
+                color: 'rgba(0,0,0,0.05)'
+              },
             }
           }
         }
@@ -595,15 +659,27 @@
           responsive: true,
           layout: {
             padding: {
-              right: 40
+              right: 30,
+              left: 5,
             }
           },
           plugins: {
-            legend: { display: false },
+            legend: {
+              display: false
+            },
             tooltip: {
-              titleFont: { family: fontFamily, size: 13, weight: 'bold' },
-              bodyFont: { family: fontFamily, size: 12 },
-              legend: { display: false }
+              titleFont: {
+                family: fontFamily,
+                size: 13,
+                weight: 'bold'
+              },
+              bodyFont: {
+                family: fontFamily,
+                size: 12
+              },
+              legend: {
+                display: false
+              }
             },
             datalabels: {
               display: true,
@@ -612,10 +688,24 @@
               offset: 6,
               formatter: (value) => value.toLocaleString('id-ID'),
               color: '#003366',
-              font: { family: fontFamily, size: 11, weight: 'bold' }
+              font: {
+                family: fontFamily,
+                size: 11,
+                weight: 'bold'
+              }
             }
           },
-          scales: { x: { display: false, beginAtZero: true }, y: { grid: { display: false } } }
+          scales: {
+            x: {
+              display: false,
+              beginAtZero: true
+            },
+            y: {
+              grid: {
+                display: false
+              }
+            }
+          }
         }
       });
     };
@@ -651,8 +741,16 @@
             }
           },
           plugins: {
-            tooltip: { titleFont: { family: fontFamily, size: 13, weight: 'bold' } },
-            legend: { display: false },
+            tooltip: {
+              titleFont: {
+                family: fontFamily,
+                size: 13,
+                weight: 'bold'
+              }
+            },
+            legend: {
+              display: false
+            },
             datalabels: {
               display: true,
               align: 'right',
@@ -662,7 +760,11 @@
               color: '#003366',
               color: (ctx) =>
                 ctx.dataIndex === 0 ? '#312e81' : '#374151',
-              font: { family: fontFamily, size: 11, weight: 'bold' }
+              font: {
+                family: fontFamily,
+                size: 11,
+                weight: 'bold'
+              }
             }
           },
           scales: {
@@ -670,7 +772,9 @@
               display: false,
             },
             y: {
-              grid: { display: false }
+              grid: {
+                display: false
+              }
             }
           }
         }
@@ -688,7 +792,9 @@
 
     // --- AJAX Handler ---
     const updateDashboardData = async (type) => {
-      let params = new URLSearchParams({ type: type });
+      let params = new URLSearchParams({
+        type: type
+      });
 
       if (type === 'ranked_list') {
         params.append('faculty', document.getElementById('rankFaculty').value);

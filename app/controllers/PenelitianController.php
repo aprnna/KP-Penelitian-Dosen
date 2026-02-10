@@ -91,7 +91,9 @@ class PenelitianController extends Controller
     $articles = $articleModel->getArticlesByAuthorId($id);
     $count = count($articles);
 
-    $ratios = $articleModel->getAuthorRoleRatios($id);
+    // Filter year for ratio
+    $statsYear = isset($_GET['statsYear']) ? $_GET['statsYear'] : 'Semua Tahun';
+    $ratios = $articleModel->getAuthorRoleRatios($id, $statsYear);
 
     // Prepare dosen detail
     $dosenDetail = [
@@ -111,36 +113,37 @@ class PenelitianController extends Controller
       'rasio_coauthor' => $ratios['rasio_coauthor']
     ];
 
-    // Dynamic Publication Categories with Pagination
-    $uniqueTypes = $articleModel->getUniqueTypesByAuthor($id);
+    // Dynamic Publication Categories with Pagination (categorized by Journal)
+    $uniqueJournals = $articleModel->getUniqueJournalsByAuthor($id);
     $categorizedPublications = [];
     $pubLimit = 5;
 
-    foreach ($uniqueTypes as $typeObj) {
-      $type = $typeObj->type;
-      // Sanitized key for query param (e.g., "journal-article" -> "p_journal_article")
-      $paramKey = 'p_' . str_replace('-', '_', $type);
+    foreach ($uniqueJournals as $journalObj) {
+      $journal = $journalObj->journal_title;
+      // Sanitized key for query param
+      $paramKey = 'p_' . substr(md5($journal), 0, 8);
       $currentPubPage = isset($_GET[$paramKey]) ? (int) $_GET[$paramKey] : 1;
       $pubOffset = ($currentPubPage - 1) * $pubLimit;
 
-      $totalPubs = $articleModel->countArticlesByTypeAndAuthor($id, $type);
+      $totalPubs = $articleModel->countArticlesByJournalAndAuthor($id, $journal);
       $totalPubPages = ceil($totalPubs / $pubLimit);
-      $typeArticles = $articleModel->getArticlesByTypeAndAuthor($id, $type, $pubLimit, $pubOffset);
+      $journalArticles = $articleModel->getArticlesByJournalAndAuthor($id, $journal, $pubLimit, $pubOffset);
 
       $publications = [];
-      foreach ($typeArticles as $article) {
+      foreach ($journalArticles as $article) {
         $publications[] = [
           'title' => $article->title,
           'program_studi' => $author->faculty,
-          'journal' => $article->journal_title ?? '-',
-          'journal_name' => $article->source ?? 'Source',
+          'journal_title' => $article->journal_title ?? '-',
+          'journal_short' => $article->short_journal_title ?? '-',
+          'publisher' => $article->publisher ?? 'Source',
           'doi' => $article->doi ?? '-',
           'year' => $article->published,
           'type' => $article->type ?? 'Article'
         ];
       }
 
-      $categorizedPublications[$type] = [
+      $categorizedPublications[$journal] = [
         'data' => $publications,
         'currentPage' => $currentPubPage,
         'totalPages' => $totalPubPages,
@@ -149,9 +152,9 @@ class PenelitianController extends Controller
       ];
     }
 
-    // Determine active tab (default to first type found or empty)
-    $firstType = !empty($uniqueTypes) ? $uniqueTypes[0]->type : '';
-    $activeTab = isset($_GET['tab']) ? $_GET['tab'] : $firstType;
+    // Determine active tab (default to first journal found or empty)
+    $firstJournal = !empty($uniqueJournals) ? $uniqueJournals[0]->journal_title : '';
+    $activeTab = isset($_GET['tab']) ? $_GET['tab'] : $firstJournal;
 
     $data = [
       'title' => 'Detail Dosen - ' . $author->fullname,
@@ -159,6 +162,7 @@ class PenelitianController extends Controller
       'dosen' => $dosenDetail,
       'categorizedPublications' => $categorizedPublications,
       'activeTab' => $activeTab,
+      'statsYear' => $statsYear,
       'viewContent' => 'penelitian/detail',
       'showNavbar' => true,
       'currentPage' => 'penelitian'
