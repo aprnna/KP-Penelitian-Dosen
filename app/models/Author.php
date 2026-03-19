@@ -281,6 +281,7 @@ class Author
         fullname                  = :fullname,
         degree                    = :degree,
         major                     = :major,
+        faculty                   = :faculty,
         subject_research          = :subject_research,
         sinta_score_overall       = :sinta_score_overall,
         sinta_score_3yr           = :sinta_score_3yr,
@@ -305,6 +306,7 @@ class Author
         $this->db->bind(":fullname", $data["fullname"] ?? null);
         $this->db->bind(":degree", $data["degree"] ?? null);
         $this->db->bind(":major", $data["major"] ?? null);
+        $this->db->bind(":faculty", $data["faculty"] ?? null);
         $this->db->bind(":subject_research", $data["subject_research"] ?? null);
         $this->db->bind(
             ":sinta_score_overall",
@@ -367,6 +369,7 @@ class Author
         fullname,
         degree,
         major,
+        faculty,
         subject_research,
         sinta_score_overall,
         sinta_score_3yr,
@@ -389,6 +392,7 @@ class Author
         :fullname,
         :degree,
         :major,
+        :faculty,
         :subject_research,
         :sinta_score_overall,
         :sinta_score_3yr,
@@ -413,6 +417,7 @@ class Author
         $this->db->bind(":fullname", $data["fullname"] ?? null);
         $this->db->bind(":degree", $data["degree"] ?? null);
         $this->db->bind(":major", $data["major"] ?? null);
+        $this->db->bind(":faculty", $data["faculty"] ?? null);
         $this->db->bind(":subject_research", $data["subject_research"] ?? null);
         $this->db->bind(
             ":sinta_score_overall",

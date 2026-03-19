@@ -33,31 +33,55 @@
           <table class="table table-sm table-hover mb-0 align-middle">
             <thead class="table-light position-sticky top-0" style="z-index:1;">
               <tr>
-                <th style="width: 110px;">NIDN</th>
+                <th style="width: 90px;">Type</th>
                 <th>Nama &amp; SINTA ID</th>
-                <th style="width: 120px;">Action</th>
+                <th style="width: 280px;">Perubahan</th>
               </tr>
             </thead>
             <tbody>
               <?php foreach (($inserted ?? []) as $author): ?>
                 <tr>
-                  <td><?php echo htmlspecialchars((string) ($author['nidn'] ?? '-')); ?></td>
+                  <td><span class="badge bg-primary"><i class="bi bi-plus-lg me-1"></i>INSERT</span></td>
                   <td>
                     <div class="fw-semibold"><?php echo htmlspecialchars((string) ($author['fullname'] ?? $author['nama'] ?? '-')); ?></div>
+                    <div class="small text-muted">NIDN: <?php echo htmlspecialchars((string) ($author['nidn'] ?? '-')); ?></div>
                     <div class="small text-muted">ID: <?php echo htmlspecialchars((string) ($author['id_sinta'] ?? '-')); ?></div>
                   </td>
-                  <td><span class="badge bg-primary"><i class="bi bi-plus-lg me-1"></i>INSERT</span></td>
+                  <td>
+                    <div class="small text-muted">Author baru akan ditambahkan ke tabel <code>authors</code>.</div>
+                  </td>
                 </tr>
               <?php endforeach; ?>
 
               <?php foreach (($updated ?? []) as $author): ?>
                 <tr>
-                  <td><?php echo htmlspecialchars((string) ($author['nidn'] ?? '-')); ?></td>
+                  <td><span class="badge bg-success"><i class="bi bi-pencil me-1"></i>UPDATE</span></td>
                   <td>
-                    <div class="fw-semibold"><?php echo htmlspecialchars((string) ($author['fullname'] ?? $author['nama'] ?? '-')); ?></div>
+                    <div class="fw-semibold"><?php echo htmlspecialchars((string) ($author['fullname'] ?? '-')); ?></div>
+                    <div class="small text-muted">NIDN: <?php echo htmlspecialchars((string) ($author['nidn'] ?? '-')); ?></div>
                     <div class="small text-muted">ID: <?php echo htmlspecialchars((string) ($author['id_sinta'] ?? '-')); ?></div>
                   </td>
-                  <td><span class="badge bg-success"><i class="bi bi-pencil me-1"></i>UPDATE</span></td>
+                  <td>
+                    <?php if (!empty($author['changes']) && is_array($author['changes'])): ?>
+                      <div class="d-flex flex-wrap gap-1 mb-1">
+                        <?php foreach ($author['changes'] as $change): ?>
+                          <span class="badge bg-light text-dark border"><?php echo htmlspecialchars((string) ($change['label'] ?? $change['field'] ?? '-')); ?></span>
+                        <?php endforeach; ?>
+                      </div>
+                      <div class="small text-muted">
+                        <?php foreach ($author['changes'] as $change): ?>
+                          <div>
+                            <strong><?php echo htmlspecialchars((string) ($change['label'] ?? $change['field'] ?? '-')); ?>:</strong>
+                            <?php echo htmlspecialchars((string) (($change['old'] ?? null) === null ? '-' : $change['old'])); ?>
+                            &rarr;
+                            <?php echo htmlspecialchars((string) (($change['new'] ?? null) === null ? '-' : $change['new'])); ?>
+                          </div>
+                        <?php endforeach; ?>
+                      </div>
+                    <?php else: ?>
+                      <span class="text-muted small">Tidak ada detail perubahan.</span>
+                    <?php endif; ?>
+                  </td>
                 </tr>
               <?php endforeach; ?>
             </tbody>

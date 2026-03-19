@@ -160,8 +160,6 @@ class ScrapingController extends Controller
                 }
 
                 try {
-                    $sintaAuthor = $this->normalizeMajorDegree($sintaAuthor);
-
                     $localAuthor = $authorModel->getAuthorById($idSinta);
 
                     if ($localAuthor) {
@@ -461,49 +459,6 @@ class ScrapingController extends Controller
         ]);
     }
 
-    private function normalizeMajorDegree(array $sintaAuthor): array
-    {
-        // Raw values from backend (may be only 'major' containing both pieces,
-        // or backend may already provide 'degree' separately).
-        $rawMajor = isset($sintaAuthor["major"]) ? trim((string) $sintaAuthor["major"]) : "";
-        $rawDegree = isset($sintaAuthor["degree"]) ? trim((string) $sintaAuthor["degree"]) : "";
-
-        // Prefer explicit degree if provided by backend
-        $degree = $rawDegree !== "" ? strtoupper($rawDegree) : null;
-        $major = $rawMajor !== "" ? $rawMajor : null;
-
-        // If backend didn't provide degree separately, try to parse it from the
-        // `major` field (common formats).
-        if ($degree === null && $rawMajor !== "") {
-            // Format: "Teknik Elektro (S1)"
-            if (preg_match('/^(.*)\\s*\\((S[123]|D[1-4])\\)\\s*$/iu', $rawMajor, $m)) {
-                $major = trim($m[1]);
-                $degree = strtoupper(trim($m[2]));
-                $major = $major !== "" ? $major : null;
-            }
-            // Format: "S2 Teknik Informatika" or "S3 - Ilmu Komputer" or "Prof - Ilmu ..."
-            elseif (preg_match('/^(S[123]|D[1-4]|Prof(?:esor)?|Dr\\.?)(?:\\s*[-,:]\\s*|\\s+)(.+)$/iu', $rawMajor, $m)) {
-                $degree = strtoupper(trim($m[1]));
-                $major = trim($m[2]) !== "" ? trim($m[2]) : null;
-            }
-            // Format: "S1" only
-            elseif (preg_match('/^(S[123]|D[1-4])$/iu', $rawMajor, $m)) {
-                $degree = strtoupper(trim($m[1]));
-                $major = null;
-            }
-            // Otherwise keep the rawMajor as program name (major) and leave degree null
-        }
-
-        // Normalize empty strings to null to avoid false positives when comparing
-        $degree = $degree !== "" ? $degree : null;
-        $major = $major !== "" ? $major : null;
-
-        $sintaAuthor["degree"] = $degree;
-        $sintaAuthor["major"] = $major;
-
-        return $sintaAuthor;
-    }
-
     private function sintaFieldsChanged($local, array $remote): bool
     {
         $fields = [
@@ -514,6 +469,7 @@ class ScrapingController extends Controller
             "subject_research",
             "degree",
             "major",
+            "faculty",
             "s_article_scopus",
             "s_citation_scopus",
             "s_cited_document_scopus",
@@ -791,13 +747,17 @@ class ScrapingController extends Controller
                 continue;
             }
 
-            $sintaAuthor = $this->normalizeMajorDegree($sintaAuthor);
             $localAuthor = $authorModel->getAuthorById($idSinta);
 
             if ($localAuthor) {
                 $changed = $this->sintaFieldsChanged($localAuthor, $sintaAuthor);
                 if ($changed) {
-                    $toUpdate[] = $sintaAuthor;
+                    $changes = $this->detectAuthorFieldChanges($localAuthor, $sintaAuthor);
+                    $toUpdate[] = array_merge($sintaAuthor, [
+                        "id_sinta" => (int) ($localAuthor->id_sinta ?? 0),
+                        "nidn" => (string) ($localAuthor->nidn ?? "-"),
+                        "changes" => $changes,
+                    ]);
                 } else {
                     $skipped++;
                 }
@@ -814,6 +774,73 @@ class ScrapingController extends Controller
                 "skipped" => $skipped,
             ],
         ];
+    }
+
+    private function detectAuthorFieldChanges($local, array $incoming)
+    {
+        $fields = [
+            "sinta_score_overall" => "SINTA Score Overall",
+            "sinta_score_3yr" => "SINTA Score 3yr",
+            "affil_score" => "Affiliation Score",
+            "affil_score_3yr" => "Affiliation Score 3yr",
+            "subject_research" => "Subject Research",
+            "degree" => "Degree",
+            "major" => "Major",
+            "faculty" => "Faculty",
+            "s_article_scopus" => "Articles (Scopus)",
+            "s_citation_scopus" => "Citations (Scopus)",
+            "s_cited_document_scopus" => "Cited Documents (Scopus)",
+            "s_hindex_scopus" => "H-Index (Scopus)",
+            "s_i10_index_scopus" => "i10-Index (Scopus)",
+            "s_gindex_scopus" => "G-Index (Scopus)",
+            "s_article_gscholar" => "Articles (GScholar)",
+            "s_citation_gscholar" => "Citations (GScholar)",
+            "s_cited_document_gscholar" => "Cited Documents (GScholar)",
+            "s_hindex_gscholar" => "H-Index (GScholar)",
+            "s_i10_index_gscholar" => "i10-Index (GScholar)",
+            "s_gindex_gscholar" => "G-Index (GScholar)",
+        ];
+
+        $normalize = function ($val, $field) {
+            if ($val === null) {
+                return null;
+            }
+
+            if ($field === "degree") {
+                $v = trim((string) $val);
+                return $v === "" ? null : strtoupper($v);
+            }
+
+            if ($field === "major" || $field === "subject_research") {
+                $v = trim((string) $val);
+                $v = preg_replace('/\s+/u', ' ', $v);
+                return $v === "" ? null : $v;
+            }
+
+            $v = trim((string) $val);
+            return $v === "" ? null : $v;
+        };
+
+        $changes = [];
+
+        foreach ($fields as $field => $label) {
+            $oldValue = $local->{$field} ?? null;
+            $newValue = $incoming[$field] ?? null;
+
+            $nOld = $normalize($oldValue, $field);
+            $nNew = $normalize($newValue, $field);
+
+            if ($nOld !== $nNew) {
+                $changes[] = [
+                    "field" => $field,
+                    "label" => $label,
+                    "old" => $nOld,
+                    "new" => $nNew,
+                ];
+            }
+        }
+
+        return $changes;
     }
 
     private function buildSyncArticlesPreviewData()
@@ -1016,7 +1043,7 @@ class ScrapingController extends Controller
             "volume" => $this->normalizeOptionalString($raw["volume"] ?? null),
             "page" => $this->normalizeOptionalString($raw["page"] ?? null),
             "published" => $published,
-            "type" => $this->normalizeOptionalString($raw["type"] ?? ($raw["source"] ?? null)),
+            "type" => $this->normalizeOptionalString($raw["raw_type"] ?? null),
             "pdf_link" => $this->normalizeOptionalString($raw["pdf_link"] ?? null),
             "issn" => $this->normalizeOptionalString($raw["issn"] ?? null),
             "issn_type" => $this->normalizeOptionalString($raw["issn_type"] ?? null),
