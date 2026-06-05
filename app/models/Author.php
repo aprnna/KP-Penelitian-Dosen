@@ -157,7 +157,7 @@ class Author
         JOIN articles ar ON aa.id_article = ar.id_article
         WHERE ar.published IS NOT NULL AND ar.published != ""
         AND SUBSTRING(ar.published, 1, 4) BETWEEN :start_year AND :end_year
-        AND ar.indexed_date_time IS NOT NULL AND ar.indexed_date_time != ""
+        AND ar.indexed_date_time IS NOT NULL
       ';
 
         if ($faculty && $faculty !== "Semua Fakultas") {
@@ -194,7 +194,7 @@ class Author
         // Filter by type Journal if requested "jurnal terindeks" or similar.
         // We filter where indexed_date_time is not null.
         $conditions[] =
-            'ar.indexed_date_time IS NOT NULL AND ar.indexed_date_time != ""';
+            'ar.indexed_date_time IS NOT NULL';
         if ($year) {
             $conditions[] = "ar.published LIKE :year";
         }

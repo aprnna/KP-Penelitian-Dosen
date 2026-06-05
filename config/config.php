@@ -11,7 +11,7 @@ define('API_KEY', getenv('API_KEY') ?: '');
 
 // App Configuration
 define('APP_NAME', getenv('APP_NAME') ?: 'MVC Application');
-define('BASE_URL', getenv('BASE_URL') ?: 'http://localhost:8080/');
+define('BASE_URL', rtrim(getenv('BASE_URL') ?: 'http://localhost:8080/', '/') . '/');
 
 // Path Configuration
 define('ROOT', dirname(__DIR__));

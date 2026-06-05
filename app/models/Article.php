@@ -112,7 +112,7 @@ class Article
     if ($year) {
       $sql .= ' AND a.published LIKE :year ';
     }
-    $sql .= ' AND a.indexed_date_time IS NOT NULL AND a.indexed_date_time != "" ';
+    $sql .= ' AND a.indexed_date_time IS NOT NULL ';
 
     if ($faculty && $faculty !== 'Semua Fakultas') {
       $sql .= ' AND au.faculty LIKE :faculty ';
@@ -205,7 +205,7 @@ class Article
     }
 
     $conditions = [];
-    $conditions[] = 'a.indexed_date_time IS NOT NULL AND a.indexed_date_time != ""';
+    $conditions[] = 'a.indexed_date_time IS NOT NULL';
 
     if ($year) {
       $conditions[] = 'a.published LIKE :year';
