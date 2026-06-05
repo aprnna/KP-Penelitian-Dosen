@@ -1,7 +1,7 @@
 <?php
 /**
  * Penelitian Table Row Component
- * 
+ *
  * @param string $name - Dosen name
  * @param string $id - Dosen NIDN
  * @param string $faculty - Faculty name
@@ -17,44 +17,33 @@
  */
 ?>
 
-<tr class="<?php echo $isAlternate ? 'bg-light' : ''; ?> clickable-row" data-href="<?php echo $detailUrl; ?>"
-  style=" cursor: pointer;">
-  <td class="py-3 px-4">
-    <div class="d-flex flex-column">
-      <span class="fw-bold"><?php echo htmlspecialchars($name); ?></span>
-      <small class="text-muted">
-        <i class="bi bi-person-fill text-primary"></i>
+<tr class="clickable-row <?php echo $isAlternate ? 'bg-light' : ''; ?>" data-href="<?php echo $detailUrl; ?>">
+  <td>
+    <div class="dosen-info">
+      <span class="dosen-name"><?php echo htmlspecialchars($name); ?></span>
+      <span class="dosen-meta">
+        <i class="bi bi-person-badge-fill"></i>
         NIDN: <?php echo htmlspecialchars($id); ?>
-      </small>
-      <small class="text-muted">
-        <i class="bi bi-building-fill text-primary"></i>
+      </span>
+      <span class="dosen-meta">
+        <i class="bi bi-building-fill"></i>
         <?php echo htmlspecialchars($faculty); ?>
-      </small>
-      <div class="d-flex gap-3 mt-1">
-        <small class="text-muted">
-          <i class="bi bi-bookmark-star text-primary"></i>
+      </span>
+      <div class="dosen-badges">
+        <span class="dosen-badge">
+          <i class="bi bi-bookmark-star-fill"></i>
           Scopus H-Index: <strong><?php echo $scopus_h_index; ?></strong>
-        </small>
-        <small class="text-muted">
-          <i class="bi bi-google text-primary"></i>
+        </span>
+        <span class="dosen-badge">
+          <i class="bi bi-google"></i>
           GS H-Index: <strong><?php echo $gs_h_index; ?></strong>
-        </small>
+        </span>
       </div>
     </div>
   </td>
-  <td class="py-3 px-4 text-center align-middle">
-    <span class="fw-bold fs-5"><?php echo $jumlah_jurnal; ?></span>
-  </td>
-  <td class="py-3 px-4 text-center align-middle">
-    <span class="fw-bold fs-5"><?php echo number_format($sinta_score_3yr, 2); ?></span>
-  </td>
-  <td class="py-3 px-4 text-center align-middle">
-    <span class="fw-bold fs-5"><?php echo number_format($sinta_score, 2); ?></span>
-  </td>
-  <td class="py-3 px-4 text-center align-middle">
-    <span class="fw-bold fs-5"><?php echo number_format($affil_score_3yr, 2); ?></span>
-  </td>
-  <td class="py-3 px-4 text-center align-middle">
-    <span class="fw-bold fs-5"><?php echo number_format($affil_score, 2); ?></span>
-  </td>
+  <td class="score-cell"><?php echo $jumlah_jurnal; ?></td>
+  <td class="score-cell"><?php echo number_format($sinta_score_3yr, 2); ?></td>
+  <td class="score-cell"><?php echo number_format($sinta_score, 2); ?></td>
+  <td class="score-cell"><?php echo number_format($affil_score_3yr, 2); ?></td>
+  <td class="score-cell"><?php echo number_format($affil_score, 2); ?></td>
 </tr>

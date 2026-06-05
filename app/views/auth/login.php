@@ -106,6 +106,7 @@
 
 <!-- Login Form -->
 <form action="<?php echo BASE_URL; ?>auth/login" method="POST">
+  <?php echo csrf_field(); ?>
   <div class="mb-3">
     <label for="username" class="form-label form-label-custom">Username</label>
     <input type="text" class="form-control form-control-custom" id="username" name="username" placeholder="Masukkan Username" required>

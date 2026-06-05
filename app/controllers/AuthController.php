@@ -25,9 +25,9 @@ class AuthController extends Controller
 
   public function doLogin()
   {
-
-
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      csrf_verify_or_fail(BASE_URL . 'auth/login');
+
       $username = $_POST['username'] ?? '';
       $password = $_POST['password'] ?? '';
 
@@ -60,6 +60,8 @@ class AuthController extends Controller
   public function doRegister()
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      csrf_verify_or_fail(BASE_URL . 'auth/register');
+
       $data = [
         'username' => $_POST['username'] ?? '',
         'email' => $_POST['email'] ?? '',

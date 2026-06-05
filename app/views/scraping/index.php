@@ -1,28 +1,426 @@
+<!-- Page-specific styles for consistent design -->
+<style>
+  /* ============================================
+     SCRAPING PAGE DESIGN SYSTEM
+     ============================================ */
+
+  /* CSS Custom Properties */
+  :root {
+    --scrape-primary: #0066cc;
+    --scrape-primary-hover: #0056b3;
+    --scrape-primary-light: #e6f2ff;
+    --scrape-success: #16a34a;
+    --scrape-success-light: #dcfce7;
+    --scrape-warning: #d97706;
+    --scrape-warning-light: #fef3c7;
+    --scrape-danger: #dc2626;
+    --scrape-danger-light: #fee2e2;
+    --scrape-muted: #64748b;
+    --scrape-border: #e2e8f0;
+    --scrape-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --scrape-radius: 12px;
+    --scrape-radius-sm: 8px;
+  }
+
+  /* Section Title */
+  .scrape-section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--scrape-muted);
+    margin-bottom: 1rem;
+  }
+
+  /* Action Card Base */
+  .scrape-action-card {
+    background: #ffffff;
+    border-radius: var(--scrape-radius);
+    box-shadow: var(--scrape-card-shadow);
+    border: 1px solid var(--scrape-border);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scrape-action-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+  }
+
+  /* Card Header */
+  .scrape-card-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--scrape-border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .scrape-card-header .header-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--scrape-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+  }
+
+  .scrape-card-header .header-icon.primary {
+    background: var(--scrape-primary-light);
+    color: var(--scrape-primary);
+  }
+
+  .scrape-card-header .header-icon.success {
+    background: var(--scrape-success-light);
+    color: var(--scrape-success);
+  }
+
+  .scrape-card-header .header-icon.warning {
+    background: var(--scrape-warning-light);
+    color: var(--scrape-warning);
+  }
+
+  .scrape-card-header .header-text h6 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin: 0;
+    color: #1e293b;
+  }
+
+  .scrape-card-header .header-text small {
+    font-size: 0.75rem;
+    color: var(--scrape-muted);
+  }
+
+  /* Card Body */
+  .scrape-card-body {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scrape-card-body p {
+    font-size: 0.875rem;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .scrape-card-body code {
+    background: #f1f5f9;
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    color: #334155;
+  }
+
+  /* Action Buttons */
+  .scrape-btn-action {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    border-radius: var(--scrape-radius-sm);
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+
+  .scrape-btn-action.primary {
+    background: var(--scrape-primary);
+    color: #ffffff;
+    border-color: var(--scrape-primary);
+  }
+
+  .scrape-btn-action.primary:hover {
+    background: var(--scrape-primary-hover);
+    border-color: var(--scrape-primary-hover);
+  }
+
+  .scrape-btn-action.success {
+    background: var(--scrape-success);
+    color: #ffffff;
+    border-color: var(--scrape-success);
+  }
+
+  .scrape-btn-action.success:hover {
+    background: #15803d;
+    border-color: #15803d;
+  }
+
+  .scrape-btn-action.outline {
+    background: transparent;
+    color: var(--scrape-primary);
+    border-color: var(--scrape-primary);
+  }
+
+  .scrape-btn-action.outline:hover {
+    background: var(--scrape-primary-light);
+  }
+
+  .scrape-btn-action.outline-secondary {
+    background: transparent;
+    color: var(--scrape-muted);
+    border-color: var(--scrape-border);
+  }
+
+  .scrape-btn-action.outline-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  /* Select Styling */
+  .scrape-select {
+    border-radius: var(--scrape-radius-sm);
+    border-color: var(--scrape-border);
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .scrape-select:focus {
+    border-color: var(--scrape-primary);
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  }
+
+  /* Status Badges */
+  .scrape-badge {
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .scrape-badge.pending {
+    background: #f1f5f9;
+    color: #475569;
+  }
+
+  .scrape-badge.running {
+    background: var(--scrape-primary-light);
+    color: var(--scrape-primary);
+  }
+
+  .scrape-badge.finished {
+    background: var(--scrape-success-light);
+    color: var(--scrape-success);
+  }
+
+  .scrape-badge.failed {
+    background: var(--scrape-danger-light);
+    color: var(--scrape-danger);
+  }
+
+  /* Source Badges */
+  .scrape-badge.source-authors {
+    background: var(--scrape-primary-light);
+    color: var(--scrape-primary);
+  }
+
+  .scrape-badge.source-articles {
+    background: var(--scrape-success-light);
+    color: var(--scrape-success);
+  }
+
+  .scrape-badge.source-both {
+    background: #f1f5f9;
+    color: #334155;
+  }
+
+  /* History Table */
+  .scrape-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .scrape-table thead th {
+    background: #f8fafc;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--scrape-muted);
+    border-bottom: 1px solid var(--scrape-border);
+  }
+
+  .scrape-table tbody td {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--scrape-border);
+    vertical-align: middle;
+  }
+
+  .scrape-table tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .scrape-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Table Action Button */
+  .scrape-btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--scrape-radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--scrape-border);
+    color: var(--scrape-muted);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .scrape-btn-icon:hover {
+    background: var(--scrape-primary-light);
+    border-color: var(--scrape-primary);
+    color: var(--scrape-primary);
+  }
+
+  /* Filter Controls */
+  .scrape-filter-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* Modal Styling */
+  .scrape-modal-header {
+    background: var(--scrape-primary);
+    color: #ffffff;
+    border-bottom: none;
+    padding: 1rem 1.5rem;
+  }
+
+  .scrape-modal-header .btn-close-white {
+    opacity: 0.8;
+  }
+
+  .scrape-modal-header .btn-close-white:hover {
+    opacity: 1;
+  }
+
+  /* Alert Styling */
+  .scrape-alert {
+    padding: 0.75rem 1rem;
+    border-radius: var(--scrape-radius-sm);
+    font-size: 0.875rem;
+    border: 1px solid;
+  }
+
+  .scrape-alert.info {
+    background: var(--scrape-primary-light);
+    border-color: #b3d7ff;
+    color: var(--scrape-primary);
+  }
+
+  .scrape-alert.success {
+    background: var(--scrape-success-light);
+    border-color: #bbf7d0;
+    color: var(--scrape-success);
+  }
+
+  .scrape-alert.warning {
+    background: var(--scrape-warning-light);
+    border-color: #fde68a;
+    color: var(--scrape-warning);
+  }
+
+  .scrape-alert.danger {
+    background: var(--scrape-danger-light);
+    border-color: #fecaca;
+    color: var(--scrape-danger);
+  }
+
+  /* Progress indicator */
+  .scrape-progress {
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    overflow: hidden;
+  }
+
+  .scrape-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--scrape-primary);
+    transition: width 0.3s ease;
+  }
+
+  /* Job ID code styling */
+  .scrape-job-id {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.8125rem;
+    background: #f1f5f9;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    color: #334155;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .scrape-action-card {
+      margin-bottom: 1rem;
+    }
+
+    .scrape-filter-group {
+      width: 100%;
+    }
+
+    .scrape-filter-group .scrape-select {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+</style>
+
 <div class="container py-4" style="max-width: 1400px;">
 
-  <!-- ====================================================================
-       ACTION CARDS: Trigger Scraping & Sync
-       ==================================================================== -->
+  <!-- Page Header -->
+  <div class="mb-4">
+    <h4 class="fw-bold mb-1">Scraping Management</h4>
+    <p class="text-muted small mb-0">Kelola data scraping dan sinkronisasi dari SINTA</p>
+  </div>
+
+  <!-- Action Cards Section -->
+  <div class="scrape-section-title">Actions</div>
   <div class="row g-3 mb-4">
 
     <!-- Card 1: Scrape Authors -->
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-header bg-primary text-white">
-          <h6 class="mb-0 fw-semibold">
-            <i class="bi bi-people-fill me-2"></i>Scrape Authors
-          </h6>
+    <div class="col-lg-4 col-md-6">
+      <div class="scrape-action-card">
+        <div class="scrape-card-header">
+          <div class="header-icon primary">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div class="header-text">
+            <h6>Scrape Authors</h6>
+            <small>Profil dosen dari SINTA</small>
+          </div>
         </div>
-        <div class="card-body d-flex flex-column">
-          <p class="text-muted small mb-3">
+        <div class="scrape-card-body">
+          <p class="mb-3">
             Ambil profil dan bibliometrik semua dosen dari halaman afiliasi SINTA
-            (ID: 528 / UNIKOM). Proses terjadi dalam dua fase:
-            list afiliasi lalu detail per profil.
+            (ID: 528 / UNIKOM). Proses terjadi dalam dua fase: list afiliasi lalu detail per profil.
           </p>
           <div class="mt-auto">
-            <button type="button" class="btn btn-primary w-100" id="btnScrapeAuthors">
-              <i class="bi bi-arrow-down-circle-fill me-1"></i>
-              Start Author Scraping
+            <button type="button" class="scrape-btn-action primary" id="btnScrapeAuthors">
+              <i class="bi bi-arrow-down-circle"></i>
+              Start Scraping
             </button>
           </div>
         </div>
@@ -30,23 +428,27 @@
     </div>
 
     <!-- Card 2: Scrape Articles -->
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-header bg-success text-white">
-          <h6 class="mb-0 fw-semibold">
-            <i class="bi bi-journal-text me-2"></i>Scrape Articles
-          </h6>
+    <div class="col-lg-4 col-md-6">
+      <div class="scrape-action-card">
+        <div class="scrape-card-header">
+          <div class="header-icon success">
+            <i class="bi bi-journal-text"></i>
+          </div>
+          <div class="header-text">
+            <h6>Scrape Articles</h6>
+            <small>Artikel dari 4 sumber</small>
+          </div>
         </div>
-        <div class="card-body d-flex flex-column">
-          <p class="text-muted small mb-2">
+        <div class="scrape-card-body">
+          <p class="mb-2">
             Ambil artikel dari 4 view SINTA (Scopus, Garuda, GScholar, RAMA)
-            untuk author tertentu atau seluruh author yang sudah ada di database backend.
+            untuk author tertentu atau seluruh author di database.
           </p>
           <div class="mb-3">
             <label class="form-label small fw-semibold mb-1">
-              Pilih Dosen <span class="text-muted fw-normal">(opsional, bisa pilih banyak)</span>
+              Pilih Dosen <span class="text-muted fw-normal">(opsional)</span>
             </label>
-            <select class="form-select form-select-sm" id="selectArticleAuthors" multiple size="8">
+            <select class="form-select scrape-select" id="selectArticleAuthors" multiple size="5">
               <?php foreach (($authorsForScrape ?? []) as $author): ?>
                 <option value="<?php echo (int) $author['id_sinta']; ?>">
                   <?php echo htmlspecialchars($author['fullname']); ?> (ID: <?php echo (int) $author['id_sinta']; ?>)
@@ -54,44 +456,50 @@
               <?php endforeach; ?>
             </select>
             <div class="d-flex gap-2 mt-2">
-              <button type="button" class="btn btn-outline-secondary btn-sm" id="btnSelectAllAuthors">Pilih Semua</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" id="btnClearAllAuthors">Kosongkan</button>
+              <button type="button" class="scrape-btn-action outline-secondary" id="btnSelectAllAuthors" style="width: auto; padding: 0.375rem 0.75rem;">
+                Pilih Semua
+              </button>
+              <button type="button" class="scrape-btn-action outline-secondary" id="btnClearAllAuthors" style="width: auto; padding: 0.375rem 0.75rem;">
+                Kosongkan
+              </button>
             </div>
-            <div class="form-text">Kosongkan pilihan untuk scrape semua author di database backend.</div>
           </div>
           <div class="mt-auto">
-            <button type="button" class="btn btn-success w-100" id="btnScrapeArticles">
-              <i class="bi bi-arrow-down-circle-fill me-1"></i>
-              Start Article Scraping
+            <button type="button" class="scrape-btn-action success" id="btnScrapeArticles">
+              <i class="bi bi-arrow-down-circle"></i>
+              Start Scraping
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Card 3: Sync Authors to Local DB -->
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-header bg-warning text-dark">
-          <h6 class="mb-0 fw-semibold">
-            <i class="bi bi-arrow-repeat me-2"></i>Sync ke Database Lokal
-          </h6>
+    <!-- Card 3: Sync to Local DB -->
+    <div class="col-lg-4 col-md-6">
+      <div class="scrape-action-card">
+        <div class="scrape-card-header">
+          <div class="header-icon warning">
+            <i class="bi bi-arrow-repeat"></i>
+          </div>
+          <div class="header-text">
+            <h6>Sync Database</h6>
+            <small>Sinkronisasi ke database lokal</small>
+          </div>
         </div>
-        <div class="card-body d-flex flex-column">
-          <p class="text-muted small mb-3">
-            Tarik semua data <code>sinta_authors</code> dari KP-Backend lalu
-            cocokkan dengan tabel <code>authors</code> di database lokal.
-            Record yang berubah akan diupdate; record baru akan diinsert.
+        <div class="scrape-card-body">
+          <p class="mb-3">
+            Tarik data <code>sinta_authors</code> dan <code>sinta_articles</code> dari KP-Backend
+            lalu cocokkan dengan tabel lokal. Record yang berubah akan diupdate; record baru akan diinsert.
           </p>
-          <div id="syncResult" class="alert alert-sm py-2 small d-none mb-3"></div>
-          <div id="syncArticleResult" class="alert alert-sm py-2 small d-none mb-3"></div>
-          <div class="mt-auto">
-            <button type="button" class="btn btn-warning w-100" id="btnPreviewSync">
-              <i class="bi bi-search me-1"></i>
+          <div id="syncResult" class="scrape-alert info d-none mb-3"></div>
+          <div id="syncArticleResult" class="scrape-alert info d-none mb-3"></div>
+          <div class="mt-auto d-flex flex-column gap-2">
+            <button type="button" class="scrape-btn-action outline" id="btnPreviewSync">
+              <i class="bi bi-search"></i>
               Preview Sync Authors
             </button>
-            <button type="button" class="btn btn-outline-warning w-100 mt-2" id="btnSyncArticles">
-              <i class="bi bi-journal-check me-1"></i>
+            <button type="button" class="scrape-btn-action outline" id="btnSyncArticles">
+              <i class="bi bi-journal-check"></i>
               Preview Sync Articles
             </button>
           </div>
@@ -101,135 +509,120 @@
 
   </div><!-- /action cards -->
 
-  <!-- ====================================================================
-       JOB HISTORY TABLE
-       ==================================================================== -->
-  <div class="row">
-    <div class="col-12">
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-          <h6 class="mb-0 fw-bold">Scraping Job History</h6>
-          <button class="btn btn-sm btn-outline-primary" id="btnRefreshJobs">
-            <i class="bi bi-arrow-clockwise me-1"></i>Refresh
-          </button>
-        </div>
-        <div class="card-body">
+  <!-- Job History Section -->
+  <div class="scrape-section-title">Job History</div>
+  <div class="scrape-action-card" style="overflow: visible;">
+    <div class="scrape-card-header" style="border-bottom: 1px solid var(--scrape-border);">
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <h6 class="mb-0 fw-semibold">Scraping Jobs</h6>
+        <button class="scrape-btn-icon" id="btnRefreshJobs" title="Refresh">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      </div>
+    </div>
+    <div class="scrape-card-body" style="padding: 0;">
 
-          <!-- Filters -->
-          <div class="row g-2 mb-3">
-            <div class="col-md-4">
-              <select class="form-select form-select-sm" id="filterStatus">
-                <option value="">Semua Status</option>
-                <option value="pending">Pending</option>
-                <option value="running">Running</option>
-                <option value="finished">Finished</option>
-                <option value="failed">Failed</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <select class="form-select form-select-sm" id="filterSource">
-                <option value="">Semua Source</option>
-                <option value="sinta_authors">sinta_authors</option>
-                <option value="sinta_articles">sinta_articles</option>
-                <option value="both">both</option>
-              </select>
-            </div>
-            <div class="col-md-4 text-end">
-              <button class="btn btn-sm btn-outline-secondary" id="btnApplyFilter">
-                <i class="bi bi-funnel me-1"></i>Filter
-              </button>
-            </div>
-          </div>
-
-          <!-- Table -->
-          <div class="table-responsive">
-            <table class="table table-hover align-middle">
-              <thead class="table-light">
-                <tr>
-                  <th>Job ID</th>
-                  <th>Source</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                  <th>Duration</th>
-                  <th>Records</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="jobsTableBody">
-                <tr>
-                  <td colspan="7" class="text-center text-muted py-4">
-                    <div class="spinner-border spinner-border-sm me-2"></div>Memuat data…
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Pagination -->
-          <nav aria-label="Job pagination">
-            <ul class="pagination justify-content-center" id="pagination"></ul>
-          </nav>
-
+      <!-- Filters -->
+      <div class="p-3 border-bottom" style="border-color: var(--scrape-border) !important;">
+        <div class="scrape-filter-group">
+          <select class="form-select scrape-select" id="filterStatus" style="width: 150px;">
+            <option value="">Semua Status</option>
+            <option value="pending">Pending</option>
+            <option value="running">Running</option>
+            <option value="finished">Finished</option>
+            <option value="failed">Failed</option>
+          </select>
+          <select class="form-select scrape-select" id="filterSource" style="width: 150px;">
+            <option value="">Semua Source</option>
+            <option value="sinta_authors">Authors</option>
+            <option value="sinta_articles">Articles</option>
+            <option value="both">Both</option>
+          </select>
         </div>
       </div>
+
+      <!-- Table -->
+      <div class="table-responsive">
+        <table class="scrape-table">
+          <thead>
+            <tr>
+              <th>Job ID</th>
+              <th>Source</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Duration</th>
+              <th>Records</th>
+              <th style="width: 60px;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="jobsTableBody">
+            <tr>
+              <td colspan="7" class="text-center py-5">
+                <div class="d-flex flex-column align-items-center gap-2">
+                  <div class="spinner-border spinner-border-sm text-primary"></div>
+                  <span class="text-muted small">Memuat data...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="p-3 border-top" style="border-color: var(--scrape-border) !important;">
+        <nav aria-label="Job pagination">
+          <ul class="pagination justify-content-center mb-0" id="pagination"></ul>
+        </nav>
+      </div>
+
     </div>
   </div>
 
 </div><!-- /container -->
 
-<!-- ====================================================================
-     JOB DETAIL MODAL
-     ==================================================================== -->
+<!-- Job Detail Modal -->
 <div class="modal fade" id="jobDetailModal" tabindex="-1" aria-labelledby="jobDetailModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
+    <div class="modal-content" style="border-radius: var(--scrape-radius); overflow: hidden;">
+      <div class="modal-header scrape-modal-header">
         <h5 class="modal-title" id="jobDetailModalLabel">
           <i class="bi bi-info-circle me-2"></i>Job Details
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" id="jobDetailBody">
-        <div class="text-center py-4 text-muted">
-          <div class="spinner-border me-2"></div>Loading…
+      <div class="modal-body p-0" id="jobDetailBody">
+        <div class="text-center py-5 text-muted">
+          <div class="spinner-border me-2"></div>Loading...
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ====================================================================
-     JAVASCRIPT
-     ==================================================================== -->
+<!-- JavaScript -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
 
     const baseUrl = '<?php echo BASE_URL; ?>';
 
-    /* ------------------------------------------------------------------ */
-    /* State                                                                */
-    /* ------------------------------------------------------------------ */
+    /* State */
     let currentPage = 1;
 
-    /* ------------------------------------------------------------------ */
-    /* Constants                                                            */
-    /* ------------------------------------------------------------------ */
-    const STATUS_COLORS = {
-      pending: 'bg-secondary',
-      running: 'bg-primary',
-      finished: 'bg-success',
-      failed: 'bg-danger',
+    /* Constants */
+    const STATUS_CONFIG = {
+      pending: { class: 'pending', icon: 'bi-clock' },
+      running: { class: 'running', icon: 'bi-arrow-repeat' },
+      finished: { class: 'finished', icon: 'bi-check-circle' },
+      failed: { class: 'failed', icon: 'bi-x-circle' },
     };
 
-    const SOURCE_LABELS = {
-      sinta_authors: '<span class="badge bg-primary">Authors</span>',
-      sinta_articles: '<span class="badge bg-success">Articles</span>',
-      both: '<span class="badge bg-dark">Both</span>',
+    const SOURCE_CONFIG = {
+      sinta_authors: { class: 'source-authors', label: 'Authors' },
+      sinta_articles: { class: 'source-articles', label: 'Articles' },
+      both: { class: 'source-both', label: 'Both' },
     };
 
-    /* ------------------------------------------------------------------ */
-    /* Helpers                                                              */
-    /* ------------------------------------------------------------------ */
+    /* Helpers */
     function formatDuration(seconds) {
       if (seconds === null || seconds === undefined || seconds === '--') return '—';
       seconds = Math.floor(Number(seconds));
@@ -248,7 +641,7 @@
     function setBtnLoading(btn, loading, originalHtml) {
       btn.disabled = loading;
       btn.innerHTML = loading ?
-        '<span class="spinner-border spinner-border-sm me-1"></span>Processing…' :
+        '<span class="spinner-border spinner-border-sm me-1"></span>Processing...' :
         originalHtml;
     }
 
@@ -261,8 +654,17 @@
         .replace(/'/g, '&#039;');
     }
 
-    function getSourceLabel(source) {
-      return SOURCE_LABELS[source] ?? `<span class="badge bg-secondary">${escapeHtml(source)}</span>`;
+    function getStatusBadge(status) {
+      const config = STATUS_CONFIG[status] || { class: 'pending', icon: 'bi-question' };
+      return `<span class="scrape-badge ${config.class}">
+        <i class="bi ${config.icon}"></i>
+        ${escapeHtml(status)}
+      </span>`;
+    }
+
+    function getSourceBadge(source) {
+      const config = SOURCE_CONFIG[source] || { class: 'source-both', label: source };
+      return `<span class="scrape-badge ${config.class}">${escapeHtml(config.label)}</span>`;
     }
 
     async function requestJson(path, options = {}) {
@@ -282,9 +684,7 @@
       return result;
     }
 
-    /* ------------------------------------------------------------------ */
-    /* Scrape Author                                                        */
-    /* ------------------------------------------------------------------ */
+    /* Scrape Author */
     const btnScrapeAuthors = document.getElementById('btnScrapeAuthors');
     const originalAuthorsHtml = btnScrapeAuthors.innerHTML;
 
@@ -301,9 +701,7 @@
       }
     });
 
-    /* ------------------------------------------------------------------ */
-    /* Scrape Articles                                                      */
-    /* ------------------------------------------------------------------ */
+    /* Scrape Articles */
     const btnScrapeArticles = document.getElementById('btnScrapeArticles');
     const originalArticlesHtml = btnScrapeArticles.innerHTML;
     const selectArticleAuthors = document.getElementById('selectArticleAuthors');
@@ -349,9 +747,7 @@
       }
     });
 
-    /* ------------------------------------------------------------------ */
-    /* Core: POST /scraping/triggerScraping                                 */
-    /* ------------------------------------------------------------------ */
+    /* Core: POST /scraping/triggerScraping */
     async function triggerScrape(payload, label) {
       try {
         const result = await requestJson('scraping/triggerScraping', {
@@ -376,9 +772,7 @@
       }
     }
 
-    /* ------------------------------------------------------------------ */
-    /* Sync Authors: Open Preview Page                                      */
-    /* ------------------------------------------------------------------ */
+    /* Sync Authors: Open Preview Page */
     const btnPreviewSync = document.getElementById('btnPreviewSync');
     btnPreviewSync.addEventListener('click', function() {
       window.location.href = `${baseUrl}scraping/previewSyncAuthorsPage`;
@@ -389,9 +783,7 @@
       window.location.href = `${baseUrl}scraping/previewSyncArticlesPage`;
     });
 
-    /* ------------------------------------------------------------------ */
-    /* Job History                                                          */
-    /* ------------------------------------------------------------------ */
+    /* Job History */
     async function loadJobs(page = 1) {
       currentPage = page;
 
@@ -418,7 +810,15 @@
       const tbody = document.getElementById('jobsTableBody');
 
       if (!jobs || jobs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">Tidak ada job ditemukan.</td></tr>';
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <div class="text-muted">
+                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                <span>Tidak ada job ditemukan</span>
+              </div>
+            </td>
+          </tr>`;
         return;
       }
 
@@ -427,21 +827,33 @@
           Math.floor((new Date(job.finished_at) - new Date(job.started_at)) / 1000) :
           null;
 
-        const sourceLabel = getSourceLabel(job.source);
         const jobId = String(job.job_id || '');
         const shortJobId = escapeHtml(jobId.substring(0, 8));
 
+        const progressPercent = job.total_records > 0
+          ? Math.round((job.processed_records / job.total_records) * 100)
+          : 0;
+
         return `
         <tr>
-          <td><code class="small">${shortJobId}…</code></td>
-          <td>${sourceLabel}</td>
-          <td><span class="badge ${STATUS_COLORS[job.status] ?? 'bg-secondary'}">${escapeHtml(job.status)}</span></td>
-          <td class="small">${formatTimestamp(job.created_at)}</td>
+          <td><span class="scrape-job-id">${shortJobId}...</span></td>
+          <td>${getSourceBadge(job.source)}</td>
+          <td>${getStatusBadge(job.status)}</td>
+          <td class="small text-muted">${formatTimestamp(job.created_at)}</td>
           <td class="small">${formatDuration(durationSec)}</td>
-          <td class="small">${escapeHtml(job.processed_records)} / ${escapeHtml(job.total_records)}</td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="small">${escapeHtml(job.processed_records)} / ${escapeHtml(job.total_records)}</span>
+              ${job.status === 'running' ? `
+                <div class="scrape-progress" style="width: 60px;">
+                  <div class="scrape-progress-bar" style="width: ${progressPercent}%;"></div>
+                </div>
+              ` : ''}
+            </div>
+          </td>
           <td>
             <button
-              class="btn btn-sm btn-outline-primary btn-view-detail"
+              class="scrape-btn-icon btn-view-detail"
               data-job-id="${escapeHtml(jobId)}"
               title="Lihat Detail"
             >
@@ -482,7 +894,7 @@
                    <a class="page-link" href="#" data-page="${i}">${i}</a>
                  </li>`;
         } else if (i === cur - 3 || i === cur + 3) {
-          html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+          html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
         }
       }
 
@@ -502,21 +914,25 @@
       });
     }
 
-    /* ------------------------------------------------------------------ */
-    /* Job Detail Modal                                                     */
-    /* ------------------------------------------------------------------ */
+    /* Job Detail Modal */
     async function viewJobDetails(jobUuid) {
       const modal = new bootstrap.Modal(document.getElementById('jobDetailModal'));
       const modalBody = document.getElementById('jobDetailBody');
 
-      modalBody.innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border me-2"></div>Loading…</div>';
+      modalBody.innerHTML = `
+        <div class="text-center py-5 text-muted">
+          <div class="spinner-border me-2"></div>Loading...
+        </div>`;
       modal.show();
 
       try {
         const result = await requestJson(`scraping/getJobDetails/${jobUuid}`);
 
         if (!result.success) {
-          modalBody.innerHTML = '<div class="alert alert-danger">Job tidak ditemukan.</div>';
+          modalBody.innerHTML = `
+            <div class="p-4">
+              <div class="scrape-alert danger">Job tidak ditemukan.</div>
+            </div>`;
           return;
         }
 
@@ -524,78 +940,81 @@
         const job = data.job;
 
         modalBody.innerHTML = `
-        <div class="row g-3 mb-3">
-          <div class="col-12">
-            <div class="p-2 bg-light rounded small">
-              <span class="text-muted">Job ID:</span>
-              <code class="ms-1">${escapeHtml(job.job_id)}</code>
+        <div class="p-4">
+          <!-- Job ID -->
+          <div class="mb-4 p-3 rounded" style="background: #f8fafc;">
+            <span class="text-muted small">Job ID</span>
+            <div class="scrape-job-id mt-1">${escapeHtml(job.job_id)}</div>
+          </div>
+
+          <!-- Grid Info -->
+          <div class="row g-3 mb-4">
+            <div class="col-6">
+              <div class="small text-muted mb-1">Source</div>
+              ${getSourceBadge(job.source)}
+            </div>
+            <div class="col-6">
+              <div class="small text-muted mb-1">Status</div>
+              ${getStatusBadge(job.status)}
             </div>
           </div>
-        </div>
 
-        <div class="row g-3 mb-3">
-          <div class="col-6">
-            <div class="fw-semibold small text-muted mb-1">Source</div>
-            ${getSourceLabel(job.source)}
-          </div>
-          <div class="col-6">
-            <div class="fw-semibold small text-muted mb-1">Status</div>
-            <span class="badge ${STATUS_COLORS[job.status] ?? 'bg-secondary'}">${escapeHtml(job.status)}</span>
-          </div>
-        </div>
-
-        <div class="row g-3 mb-3">
-          <div class="col-6">
-            <div class="fw-semibold small text-muted mb-1">Progress</div>
-            <div>${(data.progress_percentage ?? 0).toFixed(1)}%
-              <span class="text-muted small">(${job.processed_records} / ${job.total_records})</span>
+          <div class="row g-3 mb-4">
+            <div class="col-6">
+              <div class="small text-muted mb-1">Progress</div>
+              <div class="fw-semibold">${(data.progress_percentage ?? 0).toFixed(1)}%</div>
+              <div class="small text-muted">${job.processed_records} / ${job.total_records} records</div>
+              <div class="scrape-progress mt-2">
+                <div class="scrape-progress-bar" style="width: ${data.progress_percentage ?? 0}%;"></div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="small text-muted mb-1">Duration</div>
+              <div class="fw-semibold">${data.duration ?? '—'}</div>
             </div>
           </div>
-          <div class="col-6">
-            <div class="fw-semibold small text-muted mb-1">Duration</div>
-            <div>${data.duration ?? '—'}</div>
+
+          <!-- Timestamps -->
+          <div class="row g-3 mb-4">
+            <div class="col-4">
+              <div class="small text-muted mb-1">Created</div>
+              <div class="small">${formatTimestamp(job.created_at)}</div>
+            </div>
+            <div class="col-4">
+              <div class="small text-muted mb-1">Started</div>
+              <div class="small">${formatTimestamp(job.started_at)}</div>
+            </div>
+            <div class="col-4">
+              <div class="small text-muted mb-1">Finished</div>
+              <div class="small">${formatTimestamp(job.finished_at)}</div>
+            </div>
           </div>
+
+          ${job.parameters ? `
+          <div class="mb-4">
+            <div class="small text-muted mb-2">Parameters</div>
+            <pre class="p-3 rounded mb-0 small" style="background: #f8fafc; font-size: 0.8125rem; overflow-x: auto;">${JSON.stringify(job.parameters, null, 2)}</pre>
+          </div>` : ''}
+
+          ${job.error_message ? `
+          <div class="scrape-alert danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Error:</strong> ${escapeHtml(job.error_message)}
+          </div>` : ''}
         </div>
-
-        <div class="row g-3 mb-3">
-          <div class="col-4">
-            <div class="fw-semibold small text-muted mb-1">Created</div>
-            <div class="small">${formatTimestamp(job.created_at)}</div>
-          </div>
-          <div class="col-4">
-            <div class="fw-semibold small text-muted mb-1">Started</div>
-            <div class="small">${formatTimestamp(job.started_at)}</div>
-          </div>
-          <div class="col-4">
-            <div class="fw-semibold small text-muted mb-1">Finished</div>
-            <div class="small">${formatTimestamp(job.finished_at)}</div>
-          </div>
-        </div>
-
-        ${job.parameters ? `
-        <div class="mb-3">
-          <div class="fw-semibold small text-muted mb-1">Parameters</div>
-          <pre class="bg-light rounded p-2 small mb-0" style="font-size:0.78rem;">${JSON.stringify(job.parameters, null, 2)}</pre>
-        </div>` : ''}
-
-        ${job.error_message ? `
-        <div class="alert alert-danger mb-0">
-          <i class="bi bi-exclamation-triangle-fill me-1"></i>
-          <strong>Error:</strong> ${escapeHtml(job.error_message)}
-        </div>` : ''}
       `;
 
       } catch (err) {
         console.error('viewJobDetails error:', err);
-        modalBody.innerHTML = '<div class="alert alert-danger">Gagal memuat detail job.</div>';
+        modalBody.innerHTML = `
+          <div class="p-4">
+            <div class="scrape-alert danger">Gagal memuat detail job.</div>
+          </div>`;
       }
     }
 
-    /* ------------------------------------------------------------------ */
-    /* Event Listeners & Init                                               */
-    /* ------------------------------------------------------------------ */
+    /* Event Listeners & Init */
     document.getElementById('btnRefreshJobs').addEventListener('click', () => loadJobs(currentPage));
-    document.getElementById('btnApplyFilter').addEventListener('click', () => loadJobs(1));
     document.getElementById('filterStatus').addEventListener('change', () => loadJobs(1));
     document.getElementById('filterSource').addEventListener('change', () => loadJobs(1));
 

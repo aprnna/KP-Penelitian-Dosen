@@ -12,6 +12,7 @@
         </div>
         <div class="card-body p-4">
           <form action="<?php echo BASE_URL; ?>user/update/<?php echo $editUser->id; ?>" method="POST">
+            <?php echo csrf_field(); ?>
             <div class="mb-3">
               <label for="name" class="form-label fw-medium">Nama</label>
               <input type="text" class="form-control" id="name" name="name" 

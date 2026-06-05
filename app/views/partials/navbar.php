@@ -1,267 +1,460 @@
+<!-- Navbar Styles -->
 <style>
-  .navbar-main {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 0.75rem 0;
+  :root {
+    --nav-primary: #0066cc;
+    --nav-primary-hover: #0056b3;
+    --nav-primary-light: #e6f2ff;
+    --nav-text: #334155;
+    --nav-text-muted: #64748b;
+    --nav-border: #e2e8f0;
+    --nav-bg: #ffffff;
+    --nav-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .navbar-app {
+    background: var(--nav-bg);
+    border-bottom: 1px solid var(--nav-border);
+    box-shadow: var(--nav-shadow);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
   }
 
   .navbar-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: relative;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    gap: 1rem;
   }
 
-  .navbar-brand-custom {
+  /* Brand */
+  .navbar-brand {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     text-decoration: none;
-    z-index: 2;
+    flex-shrink: 0;
   }
 
-  .navbar-brand-custom img {
-    height: 50px;
+  .navbar-brand-logo {
+    height: 44px;
     width: auto;
     object-fit: contain;
   }
 
-  .brand-text {
+  .navbar-brand-text {
     display: flex;
     flex-direction: column;
     line-height: 1.2;
+  }
+
+  .navbar-brand-title {
     font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--nav-text);
   }
 
-  .brand-system {
+  .navbar-brand-subtitle {
     font-size: 0.75rem;
-    color: #333;
-    margin-top: 0.25rem;
+    color: var(--nav-text-muted);
+    margin-top: 0.125rem;
   }
 
-  /* Center menu on desktop */
-  .nav-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .nav-menu-custom {
-    display: flex;
-    gap: 0.5rem;
+  /* Navigation */
+  .navbar-app .navbar-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 0.25rem;
     list-style: none;
     margin: 0;
     padding: 0;
-    align-items: center;
   }
 
-  .nav-right {
-    z-index: 2;
+  .navbar-app .navbar-nav-item {
+    position: relative;
+    flex-shrink: 0;
   }
 
-  .nav-btn {
+  .navbar-app .navbar-nav-link {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.625rem 1rem;
     border-radius: 8px;
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.9375rem;
     font-weight: 500;
+    color: var(--nav-text);
     transition: all 0.2s ease;
     border: 2px solid transparent;
-    background-color: transparent;
-    color: #333;
+    background: transparent;
     white-space: nowrap;
   }
 
-  .nav-btn:hover {
-    background-color: #e3f2fd;
-    color: #0066cc;
+  .navbar-app .navbar-nav-link:hover {
+    background: var(--nav-primary-light);
+    color: var(--nav-primary);
   }
 
-  .nav-btn.active {
-    background-color: #e3f2fd;
-    border-color: #2196f3;
-    color: #0066cc;
+  .navbar-app .navbar-nav-link.active {
+    background: var(--nav-primary-light);
+    border-color: var(--nav-primary);
+    color: var(--nav-primary);
   }
 
-  .nav-btn i {
+  .navbar-app .navbar-nav-link i {
+    font-size: 1.0625rem;
+  }
+
+  /* User Menu */
+  .navbar-user {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .navbar-user-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--nav-text);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .navbar-user-toggle:hover {
+    background: #f1f5f9;
+  }
+
+  .navbar-user-toggle i {
+    font-size: 1.25rem;
+  }
+
+  .navbar-user-toggle .user-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .navbar-user-toggle .dropdown-arrow {
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+  }
+
+  .navbar-user-toggle[aria-expanded="true"] .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  .navbar-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background: var(--nav-bg);
+    border: 1px solid var(--nav-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    padding: 0.5rem 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+    z-index: 100;
+  }
+
+  .navbar-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .navbar-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.625rem 1rem;
+    text-decoration: none;
+    color: var(--nav-text);
+    font-size: 0.875rem;
+    transition: background 0.15s ease;
+  }
+
+  .navbar-dropdown-item:hover {
+    background: #f8fafc;
+  }
+
+  .navbar-dropdown-item.danger {
+    color: #dc2626;
+  }
+
+  .navbar-dropdown-item.danger:hover {
+    background: #fee2e2;
+  }
+
+  .navbar-dropdown-item i {
+    font-size: 1rem;
+    width: 1.25rem;
+    text-align: center;
+  }
+
+  .navbar-dropdown-divider {
+    height: 1px;
+    background: var(--nav-border);
+    margin: 0.5rem 0;
+  }
+
+  /* Login Button */
+  .navbar-login {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    background: var(--nav-primary);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 2px solid var(--nav-primary);
+  }
+
+  .navbar-login:hover {
+    background: var(--nav-primary-hover);
+    border-color: var(--nav-primary-hover);
+    color: #ffffff;
+  }
+
+  .navbar-login i {
     font-size: 1rem;
   }
 
-  .nav-btn-login {
-    background-color: #357CA5;
-    color: white;
-    border-color: #357CA5;
-  }
-
-  .nav-btn-login:hover {
-    background-color: #2D6A8F;
-    border-color: #2D6A8F;
-    color: white;
-  }
-
-  .nav-btn-user {
-    background-color: transparent;
-    color: #333;
+  /* Mobile Toggle */
+  .navbar-toggle {
+    display: none;
+    padding: 0.5rem;
     border: none;
+    background: transparent;
+    color: var(--nav-text);
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s ease;
   }
 
-  .nav-btn-user:hover {
-    background-color: #f5f5f5;
-    color: #333;
+  .navbar-toggle:hover {
+    background: #f1f5f9;
   }
 
-  /* Responsive styles */
+  /* Responsive */
   @media (max-width: 991.98px) {
-    .navbar-container {
-      flex-wrap: wrap;
+    .navbar-app .navbar-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .nav-center {
-      position: static;
-      transform: none;
-      width: 100%;
-      order: 3;
-    }
-
-    .nav-menu-custom {
-      flex-direction: column;
-      align-items: stretch;
+    .navbar-app .navbar-nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--nav-border);
+      box-shadow: var(--nav-shadow);
+      flex-direction: column !important;
+      padding: 0.5rem;
       gap: 0.25rem;
-      padding: 1rem 0;
     }
 
-    .nav-btn {
+    .navbar-app .navbar-nav.show {
+      display: flex;
+    }
+
+    .navbar-app .navbar-nav-link {
       justify-content: flex-start;
-      padding: 0.75rem 1rem;
+      width: 100%;
     }
 
-    .nav-right {
+    .navbar-app .navbar-user {
       display: none;
     }
 
-    .nav-right-mobile {
-      display: block !important;
+    .navbar-app .navbar-user-mobile {
+      display: block;
+      padding: 0.5rem;
+      border-top: 1px solid var(--nav-border);
+      margin-top: 0.5rem;
     }
 
-    .dropdown-menu {
-      position: static !important;
-      border: none;
+    .navbar-app .navbar-dropdown {
+      position: static;
+      margin-top: 0;
       box-shadow: none;
-      padding-left: 1rem;
+      border: none;
+      padding: 0 0 0 1rem;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+    }
+
+    .navbar-app .navbar-dropdown.show {
+      display: block;
     }
   }
 
   @media (min-width: 992px) {
-    .nav-right-mobile {
-      display: none !important;
+    .navbar-user-mobile {
+      display: none;
     }
   }
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-main">
-  <div class="container navbar-container">
-    <!-- Brand (Left) -->
-    <a class="navbar-brand-custom" href="<?php echo BASE_URL; ?>">
-      <div class="brand-text">
-        <img src="<?php echo BASE_URL; ?>logo_unikom.png" alt="Logo UNIKOM" class="img-fluid ">
-        <span class="brand-system">Visualisasi Data Jurnal Penelitian</span>
+<nav class="navbar-app">
+  <div class="navbar-container">
+    <!-- Brand -->
+    <a class="navbar-brand" href="<?php echo BASE_URL; ?>">
+      <img src="<?php echo BASE_URL; ?>logo_unikom.png" alt="Logo UNIKOM" class="navbar-brand-logo">
+      <div class="navbar-brand-text">
+        <span class="navbar-brand-title">UNIKOM</span>
+        <span class="navbar-brand-subtitle">Visualisasi Jurnal Penelitian</span>
       </div>
     </a>
 
     <!-- Mobile Toggle -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <button class="navbar-toggle" type="button" aria-label="Toggle navigation" onclick="toggleMobileNav()">
+      <i class="bi bi-list"></i>
     </button>
 
-    <!-- Center Navigation Menu -->
-    <div class="collapse navbar-collapse nav-center" id="navbarNav">
-      <ul class="nav-menu-custom">
-        <li>
-          <a class="nav-btn <?php echo ($currentPage ?? '') === 'dashboard' ? 'active' : ''; ?>"
-            href="<?php echo BASE_URL; ?>dashboard">
-            <i class="bi bi-grid-3x3-gap-fill"></i>
-            Dashboard
-          </a>
-        </li>
-        <li>
-          <a class="nav-btn <?php echo ($currentPage ?? '') === 'penelitian' ? 'active' : ''; ?>"
-            href="<?php echo BASE_URL; ?>penelitian">
-            <i class="bi bi-journal-text"></i>
-            Penelitian Dosen
-          </a>
-        </li>
-        <li>
-          <a class="nav-btn <?php echo ($currentPage ?? '') === 'reporting' ? 'active' : ''; ?>"
-            href="<?php echo BASE_URL; ?>reporting">
-            <i class="bi bi-file-earmark-text"></i>
-            Reporting
-          </a>
-        </li>
-        <li>
-          <a class="nav-btn <?php echo ($currentPage ?? '') === 'scraping' ? 'active' : ''; ?>"
-            href="<?php echo BASE_URL; ?>scraping">
-            <i class="bi bi-cloud-download"></i>
-            Scraping
-          </a>
-        </li>
-        <!-- Login/User for Mobile -->
-        <?php if (isset($user) && $user): ?>
-          <li class="nav-item dropdown nav-right-mobile">
-            <a class="nav-btn nav-btn-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              <i class="bi bi-person-circle"></i>
-              <?php echo htmlspecialchars($user->full_name); ?>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li>
-                <form action="<?php echo BASE_URL; ?>auth/logout" method="POST">
-                  <button type="submit" class="dropdown-item text-danger">
-                    <i class="bi bi-box-arrow-right me-2"></i>Logout
-                  </button>
-                </form>
-              </li>
-            </ul>
-          </li>
-        <?php else: ?>
-          <li class="nav-right-mobile">
-            <a class="nav-btn nav-btn-login" href="<?php echo BASE_URL; ?>auth/login">
-              <i class="bi bi-box-arrow-in-right"></i>
-              Login
-            </a>
-          </li>
-        <?php endif; ?>
-      </ul>
-    </div>
+    <!-- Navigation -->
+    <ul class="navbar-nav" id="navbarNav">
+      <li class="navbar-nav-item">
+        <a class="navbar-nav-link <?php echo ($currentPage ?? '') === 'dashboard' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>dashboard">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="navbar-nav-item">
+        <a class="navbar-nav-link <?php echo ($currentPage ?? '') === 'penelitian' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>penelitian">
+          <i class="bi bi-journal-text"></i>
+          <span>Penelitian</span>
+        </a>
+      </li>
+      <li class="navbar-nav-item">
+        <a class="navbar-nav-link <?php echo ($currentPage ?? '') === 'reporting' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>reporting">
+          <i class="bi bi-file-earmark-text"></i>
+          <span>Reporting</span>
+        </a>
+      </li>
+      <li class="navbar-nav-item">
+        <a class="navbar-nav-link <?php echo ($currentPage ?? '') === 'scraping' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>scraping">
+          <i class="bi bi-cloud-download"></i>
+          <span>Scraping</span>
+        </a>
+      </li>
 
-    <!-- Right Side Login (Desktop Only) -->
-    <div class="nav-right">
+      <!-- Mobile User Menu -->
       <?php if (isset($user) && $user): ?>
-        <div class="dropdown">
-          <a class="nav-btn nav-btn-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            <i class="bi bi-person-circle"></i>
-            <?php echo htmlspecialchars($user->full_name); ?>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li>
+        <li class="navbar-user-mobile">
+          <div style="padding: 0.5rem; border-top: 1px solid var(--nav-border); margin-top: 0.5rem;">
+            <button class="navbar-user-toggle" style="width: 100%; justify-content: flex-start;" onclick="toggleMobileDropdown()">
+              <i class="bi bi-person-circle"></i>
+              <span class="user-name"><?php echo htmlspecialchars($user->full_name); ?></span>
+              <i class="bi bi-chevron-down dropdown-arrow ms-auto"></i>
+            </button>
+            <div class="navbar-dropdown show" id="mobileDropdown" style="display: none;">
               <form action="<?php echo BASE_URL; ?>auth/logout" method="POST">
-                <button type="submit" class="dropdown-item text-danger">
-                  <i class="bi bi-box-arrow-right me-2"></i>Logout
+                <button type="submit" class="navbar-dropdown-item danger">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>Logout</span>
                 </button>
               </form>
-            </li>
-          </ul>
+            </div>
+          </div>
+        </li>
+      <?php endif; ?>
+    </ul>
+
+    <!-- Desktop User Menu -->
+    <div class="navbar-user">
+      <?php if (isset($user) && $user): ?>
+        <button class="navbar-user-toggle" onclick="toggleDropdown()" aria-expanded="false">
+          <i class="bi bi-person-circle"></i>
+          <span class="user-name"><?php echo htmlspecialchars($user->full_name); ?></span>
+          <i class="bi bi-chevron-down dropdown-arrow"></i>
+        </button>
+        <div class="navbar-dropdown" id="userDropdown">
+          <form action="<?php echo BASE_URL; ?>auth/logout" method="POST">
+            <button type="submit" class="navbar-dropdown-item danger">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </button>
+          </form>
         </div>
       <?php else: ?>
-        <a class="nav-btn nav-btn-login" href="<?php echo BASE_URL; ?>auth/login">
+        <a class="navbar-login" href="<?php echo BASE_URL; ?>auth/login">
           <i class="bi bi-box-arrow-in-right"></i>
-          Login
+          <span>Login</span>
         </a>
       <?php endif; ?>
     </div>
   </div>
 </nav>
+
+<script>
+  // Mobile Navigation Toggle
+  function toggleMobileNav() {
+    const nav = document.getElementById('navbarNav');
+    nav.classList.toggle('show');
+  }
+
+  // Desktop Dropdown Toggle
+  function toggleDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    const button = event.currentTarget;
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+    button.setAttribute('aria-expanded', !isExpanded);
+    dropdown.classList.toggle('show');
+  }
+
+  // Mobile Dropdown Toggle
+  function toggleMobileDropdown() {
+    const dropdown = document.getElementById('mobileDropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('userDropdown');
+    const userToggle = document.querySelector('.navbar-user-toggle');
+
+    if (dropdown && !dropdown.contains(e.target) && !userToggle.contains(e.target)) {
+      dropdown.classList.remove('show');
+      userToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Close mobile nav when clicking a link
+  document.querySelectorAll('.navbar-nav-link').forEach(link => {
+    link.addEventListener('click', function() {
+      const nav = document.getElementById('navbarNav');
+      if (window.innerWidth < 992) {
+        nav.classList.remove('show');
+      }
+    });
+  });
+</script>

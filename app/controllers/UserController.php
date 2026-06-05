@@ -87,6 +87,8 @@ class UserController extends Controller
   public function store()
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      csrf_verify_or_fail(BASE_URL . 'user');
+
       $data = [
         'name' => $_POST['name'] ?? '',
         'email' => $_POST['email'] ?? ''
@@ -131,6 +133,8 @@ class UserController extends Controller
   public function update($id)
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      csrf_verify_or_fail(BASE_URL . 'user');
+
       $data = [
         'id' => $id,
         'name' => $_POST['name'] ?? '',
@@ -148,6 +152,8 @@ class UserController extends Controller
   public function delete($id)
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      csrf_verify_or_fail(BASE_URL . 'user');
+
       if ($this->userModel->deleteUser($id)) {
         $this->redirect('user');
       } else {
