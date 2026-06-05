@@ -3,6 +3,7 @@
 class Article
 {
   private $db;
+  private $articleColumnsCache = null;
 
   public function __construct()
   {
@@ -277,6 +278,47 @@ class Article
       'rasio_utama' => $rasioUtama,
       'rasio_coauthor' => $rasioCo
     ];
+  }
+
+  // Get articles for reporting by publication year range.
+  public function getArticlesForReporting($startYear, $endYear)
+  {
+    $quartileExpr = $this->firstAvailableArticleColumnExpr(
+      ['quartile', 'q_rank'],
+      "'-'"
+    );
+    $citationExpr = $this->firstAvailableArticleColumnExpr(
+      ['citation_count', 'citations', 'cited_by', 'jumlah_sitasi'],
+      "'-'"
+    );
+    $sourceExpr = $this->firstAvailableArticleColumnExpr(
+      ['source_article', 'article_source', 'source', 'database_source'],
+      "COALESCE(NULLIF(TRIM(a.publisher), ''), NULLIF(TRIM(a.type), ''), '-')"
+    );
+
+    $sql = "
+      SELECT
+        a.id_article,
+        a.title,
+        a.authors,
+        a.doi,
+        {$quartileExpr} AS quartile,
+        a.url,
+        {$citationExpr} AS citation_count,
+        {$sourceExpr} AS article_source,
+        a.published
+      FROM articles a
+      WHERE a.published IS NOT NULL
+        AND TRIM(a.published) != ''
+        AND TRIM(a.published) REGEXP '^[0-9]{4}'
+        AND CAST(SUBSTRING(TRIM(a.published), 1, 4) AS UNSIGNED) BETWEEN :start_year AND :end_year
+      ORDER BY CAST(SUBSTRING(TRIM(a.published), 1, 4) AS UNSIGNED) ASC, a.title ASC
+    ";
+
+    $this->db->query($sql);
+    $this->db->bind(':start_year', (int) $startYear);
+    $this->db->bind(':end_year', (int) $endYear);
+    return $this->db->resultSet();
   }
 
   // Get unique journals (short title) for a specific author
@@ -577,6 +619,40 @@ class Article
     }
 
     return false;
+  }
+
+  private function firstAvailableArticleColumnExpr(array $candidates, $fallbackExpr)
+  {
+    $columns = $this->getArticleColumns();
+
+    foreach ($candidates as $candidate) {
+      $candidateKey = strtolower((string) $candidate);
+      if (isset($columns[$candidateKey])) {
+        return 'a.' . $candidate;
+      }
+    }
+
+    return $fallbackExpr;
+  }
+
+  private function getArticleColumns()
+  {
+    if ($this->articleColumnsCache !== null) {
+      return $this->articleColumnsCache;
+    }
+
+    $this->db->query('SHOW COLUMNS FROM articles');
+    $rows = $this->db->resultSet();
+
+    $columns = [];
+    foreach ($rows as $row) {
+      if (!empty($row->Field)) {
+        $columns[strtolower((string) $row->Field)] = true;
+      }
+    }
+
+    $this->articleColumnsCache = $columns;
+    return $this->articleColumnsCache;
   }
 
   private function normalizeNullableText($value)

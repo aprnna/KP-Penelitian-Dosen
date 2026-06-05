@@ -194,7 +194,14 @@
             Penelitian Dosen
           </a>
         </li>
-        <li class="d-none">
+        <li>
+          <a class="nav-btn <?php echo ($currentPage ?? '') === 'reporting' ? 'active' : ''; ?>"
+            href="<?php echo BASE_URL; ?>reporting">
+            <i class="bi bi-file-earmark-text"></i>
+            Reporting
+          </a>
+        </li>
+        <li>
           <a class="nav-btn <?php echo ($currentPage ?? '') === 'scraping' ? 'active' : ''; ?>"
             href="<?php echo BASE_URL; ?>scraping">
             <i class="bi bi-cloud-download"></i>
