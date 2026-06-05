@@ -7,6 +7,8 @@ $router->get("dashboard", "DashboardController@index");
 $router->get("dashboard/filterData", "DashboardController@filterData");
 $router->get("penelitian", "PenelitianController@index");
 $router->get("penelitian/detail/{id}", "PenelitianController@detail");
+$router->get("reporting", "ReportingController@index");
+$router->get("reporting/exportPdf", "ReportingController@exportPdf");
 
 // User routes
 $router->get("user", "UserController@index");

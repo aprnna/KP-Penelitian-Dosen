@@ -102,77 +102,6 @@
   </div><!-- /action cards -->
 
   <!-- ====================================================================
-       LIVE PROGRESS MONITOR (hidden by default)
-       ==================================================================== -->
-  <div class="row mb-4" id="progressSection" style="display:none;">
-    <div class="col-12">
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-          <h6 class="mb-0 fw-semibold">
-            <i class="bi bi-activity me-2"></i>Live Progress Monitor
-          </h6>
-          <button class="btn btn-sm btn-light" id="btnStopMonitor">
-            <i class="bi bi-x-circle me-1"></i>Tutup
-          </button>
-        </div>
-        <div class="card-body">
-
-          <!-- Status + Job ID -->
-          <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
-            <span class="badge fs-6" id="statusBadge">Pending</span>
-            <span class="text-muted small">Job ID: <code id="currentJobId">—</code></span>
-            <span class="text-muted small" id="jobSourceLabel"></span>
-          </div>
-
-          <!-- Progress Bar -->
-          <div class="mb-3">
-            <div class="d-flex justify-content-between mb-1">
-              <span class="fw-semibold small">Progress</span>
-              <span class="small" id="progressPercentage">0%</span>
-            </div>
-            <div class="progress" style="height:22px;">
-              <div
-                class="progress-bar progress-bar-striped progress-bar-animated"
-                id="progressBar"
-                role="progressbar"
-                style="width:0%"></div>
-            </div>
-          </div>
-
-          <!-- Counters Row -->
-          <div class="row text-center g-2 mb-3">
-            <div class="col-6 col-md-3">
-              <div class="p-2 bg-light rounded">
-                <div class="h4 mb-0 text-primary" id="cntTotal">0</div>
-                <div class="small text-muted">Total Records</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="p-2 bg-light rounded">
-                <div class="h4 mb-0 text-success" id="cntProcessed">0</div>
-                <div class="small text-muted">Processed</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="p-2 bg-light rounded">
-                <div class="h4 mb-0 text-info" id="cntElapsed">00:00:00</div>
-                <div class="small text-muted">Elapsed</div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="p-2 bg-light rounded">
-                <div class="h4 mb-0 text-warning" id="cntRemaining">—</div>
-                <div class="small text-muted">Est. Remaining</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ====================================================================
        JOB HISTORY TABLE
        ==================================================================== -->
   <div class="row">
@@ -280,8 +209,6 @@
     /* ------------------------------------------------------------------ */
     /* State                                                                */
     /* ------------------------------------------------------------------ */
-    let currentJobId = null;
-    let progressInterval = null;
     let currentPage = 1;
 
     /* ------------------------------------------------------------------ */
@@ -440,12 +367,7 @@
           return;
         }
 
-        currentJobId = result.job_id;
-        document.getElementById('currentJobId').textContent = currentJobId;
-        document.getElementById('jobSourceLabel').innerHTML = getSourceLabel(payload.source);
-
-        showProgressSection();
-        startMonitoring(currentJobId);
+        alert(`${label} scraping started!\nJob ID: ${result.job_id}\n\nRefresh halaman untuk melihat progress.`);
         loadJobs();
 
       } catch (err) {
@@ -466,78 +388,6 @@
     btnSyncArticles.addEventListener('click', function() {
       window.location.href = `${baseUrl}scraping/previewSyncArticlesPage`;
     });
-
-    /* ------------------------------------------------------------------ */
-    /* Progress Monitor                                                     */
-    /* ------------------------------------------------------------------ */
-    function showProgressSection() {
-      const section = document.getElementById('progressSection');
-      section.style.display = '';
-      section.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-
-      // Reset UI
-      document.getElementById('progressBar').style.width = '0%';
-      document.getElementById('progressPercentage').textContent = '0%';
-      document.getElementById('cntTotal').textContent = '0';
-      document.getElementById('cntProcessed').textContent = '0';
-      document.getElementById('cntElapsed').textContent = '00:00:00';
-      document.getElementById('cntRemaining').textContent = '—';
-      document.getElementById('statusBadge').className = 'badge fs-6 bg-secondary';
-      document.getElementById('statusBadge').textContent = 'PENDING';
-    }
-
-    function startMonitoring(jobId) {
-      stopMonitoring();
-      progressInterval = setInterval(() => updateProgress(jobId), 2500);
-      updateProgress(jobId);
-    }
-
-    function stopMonitoring() {
-      clearInterval(progressInterval);
-      progressInterval = null;
-    }
-
-    document.getElementById('btnStopMonitor').addEventListener('click', function() {
-      stopMonitoring();
-      document.getElementById('progressSection').style.display = 'none';
-    });
-
-
-    /* ------------------------------------------------------------------ */
-    /* Poll: Progress                                                       */
-    /* ------------------------------------------------------------------ */
-    async function updateProgress(jobId) {
-      try {
-        const result = await requestJson(`scraping/getJobProgress/${jobId}`);
-        if (!result.success) return;
-
-        const status = String(result.status || 'pending').toLowerCase();
-        const progress = Number(result.progress_percentage || 0);
-        const total = Number(result.total_records || 0);
-        const processed = Number(result.processed_records || 0);
-
-        document.getElementById('progressBar').style.width = `${Math.max(0, Math.min(100, progress))}%`;
-        document.getElementById('progressPercentage').textContent = `${progress.toFixed(1)}%`;
-        document.getElementById('cntTotal').textContent = total;
-        document.getElementById('cntProcessed').textContent = processed;
-        document.getElementById('cntElapsed').textContent = formatDuration(result.elapsed_seconds);
-        document.getElementById('cntRemaining').textContent = formatDuration(result.estimated_remaining);
-
-        const badge = document.getElementById('statusBadge');
-        badge.className = `badge fs-6 ${STATUS_COLORS[status] ?? 'bg-secondary'}`;
-        badge.textContent = status.toUpperCase();
-
-        if (status === 'finished' || status === 'failed') {
-          stopMonitoring();
-          loadJobs(currentPage);
-        }
-      } catch (err) {
-        console.error('updateProgress error:', err);
-      }
-    }
 
     /* ------------------------------------------------------------------ */
     /* Job History                                                          */
@@ -597,15 +447,6 @@
             >
               <i class="bi bi-eye"></i>
             </button>
-            ${job.status === 'running' ? `
-            <button
-              class="btn btn-sm btn-outline-info btn-watch-job ms-1"
-              data-job-id="${escapeHtml(jobId)}"
-              data-source="${escapeHtml(job.source)}"
-              title="Pantau Live"
-            >
-              <i class="bi bi-activity"></i>
-            </button>` : ''}
           </td>
         </tr>
       `;
@@ -615,19 +456,6 @@
       document.querySelectorAll('.btn-view-detail').forEach(btn => {
         btn.addEventListener('click', function() {
           viewJobDetails(this.dataset.jobId);
-        });
-      });
-
-      // Watch (live monitor) buttons
-      document.querySelectorAll('.btn-watch-job').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const jid = this.dataset.jobId;
-          const src = this.dataset.source;
-          currentJobId = jid;
-          document.getElementById('currentJobId').textContent = jid;
-          document.getElementById('jobSourceLabel').innerHTML = getSourceLabel(src);
-          showProgressSection();
-          startMonitoring(jid);
         });
       });
     }
@@ -694,7 +522,6 @@
 
         const data = result.data;
         const job = data.job;
-        const lc = data.log_counts;
 
         modalBody.innerHTML = `
         <div class="row g-3 mb-3">
@@ -742,31 +569,6 @@
           <div class="col-4">
             <div class="fw-semibold small text-muted mb-1">Finished</div>
             <div class="small">${formatTimestamp(job.finished_at)}</div>
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <div class="fw-semibold small text-muted mb-2">Log Summary</div>
-          <div class="d-flex gap-2 flex-wrap">
-            <span class="badge bg-secondary">DEBUG: ${lc.DEBUG  ?? 0}</span>
-            <span class="badge bg-info text-dark">INFO: ${lc.INFO ?? 0}</span>
-            <span class="badge bg-warning text-dark">WARNING: ${lc.WARNING ?? 0}</span>
-            <span class="badge bg-danger">ERROR: ${lc.ERROR ?? 0}</span>
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <div class="fw-semibold small text-muted mb-2">Log Stream</div>
-          <div class="border rounded p-3 bg-dark text-light" style="max-height:320px;overflow-y:auto;font-family:'Courier New',monospace;font-size:0.82rem;">
-            ${(data.logs && data.logs.length)
-              ? data.logs.map(log => {
-                const ts = log.created_at ? new Date(log.created_at).toLocaleString('id-ID') : '-';
-                const level = escapeHtml(log.level ?? 'INFO');
-                const message = escapeHtml(log.message ?? '');
-                return `<div class="mb-1">[${ts}] [${level}] ${message}</div>`;
-              }).join('')
-              : '<div class="text-muted">Tidak ada log untuk job ini.</div>'
-            }
           </div>
         </div>
 

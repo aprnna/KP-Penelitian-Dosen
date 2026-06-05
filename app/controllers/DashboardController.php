@@ -320,7 +320,7 @@ class DashboardController extends Controller
 
     if ($type === 'treemap') {
       // Faculty Distribution filtered by Year
-      if (empty($year)) {
+      if (empty($year) || $year === 'Semua Tahun') {
         $year = null;
       }
       $facultyStats = $authorModel->getFacultyPublicationStats($year);
@@ -372,7 +372,7 @@ class DashboardController extends Controller
 
     if ($type === 'top_journals') {
       // Top 5 Journals (Null = All Years)
-      $targetYear = $year ?: null;
+      $targetYear = (empty($year) || $year === 'Semua Tahun') ? null : $year;
       $topJournals = $articleModel->getTopJournals(5, $faculty, $targetYear);
 
       $labels = [];
@@ -386,7 +386,8 @@ class DashboardController extends Controller
     }
 
     if ($type === 'top_impact') {
-      $topAuthors = $authorModel->getTopAuthorsByFaculty($faculty, $year, 5);
+      $effectiveYear = (empty($year) || $year === 'Semua Tahun') ? null : $year;
+      $topAuthors = $authorModel->getTopAuthorsByFaculty($faculty, $effectiveYear, 5);
       $labels = [];
       $data = [];
       foreach ($topAuthors as $a) {
@@ -403,7 +404,7 @@ class DashboardController extends Controller
       if ($faculty === 'Semua Fakultas')
         $faculty = null;
 
-      if (empty($year)) {
+      if (empty($year) || $year === 'Semua Tahun') {
         $year = null;
       }
 

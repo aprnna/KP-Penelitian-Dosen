@@ -8,7 +8,8 @@
   </div>
 <?php endif; ?>
 
-<form action="<?php echo BASE_URL; ?>auth/doRegister" method="POST">
+<form action="<?php echo BASE_URL; ?>auth/register" method="POST">
+  <?php echo csrf_field(); ?>
   <div class="mb-3">
     <label for="full_name" class="form-label fw-medium">Nama Lengkap</label>
     <input type="text" class="form-control" id="full_name" name="full_name" required>
