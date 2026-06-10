@@ -148,14 +148,22 @@ class ScrapingController extends Controller
                 "skipped" => 0,
                 "errors" => 0,
             ];
+            $skippedDetails = [];
 
             foreach ($allAuthors as $sintaAuthor) {
-                $idSinta = isset($sintaAuthor["id_sinta"])
-                    ? intval($sintaAuthor["id_sinta"])
-                    : null;
+                $rawId = $sintaAuthor["id_sinta"] ?? null;
+                $idSinta = isset($rawId) ? intval($rawId) : null;
+                $fullname = (string) ($sintaAuthor["fullname"] ?? $sintaAuthor["nama"] ?? "-");
 
                 if (!$idSinta) {
                     $stats["skipped"]++;
+                    $skippedDetails[] = [
+                        "fullname" => $fullname,
+                        "id_sinta" => $rawId,
+                        "reason" => $rawId === null || $rawId === ""
+                            ? "ID SINTA kosong (null)"
+                            : "ID SINTA tidak valid (" . var_export($rawId, true) . ")",
+                    ];
                     continue;
                 }
 
@@ -174,6 +182,11 @@ class ScrapingController extends Controller
                             $stats["updated"]++;
                         } else {
                             $stats["skipped"]++;
+                            $skippedDetails[] = [
+                                "fullname" => $fullname,
+                                "id_sinta" => $idSinta,
+                                "reason" => "Tidak ada perubahan data",
+                            ];
                         }
                     } else {
                         // New author — insert with scraped data (nidn/degree/faculty remain NULL)
@@ -182,6 +195,11 @@ class ScrapingController extends Controller
                     }
                 } catch (Exception $e) {
                     $stats["errors"]++;
+                    $skippedDetails[] = [
+                        "fullname" => $fullname,
+                        "id_sinta" => $idSinta,
+                        "reason" => "Error DB: " . $e->getMessage(),
+                    ];
                     error_log(
                         "[syncAuthors] id_sinta=" .
                             $idSinta .
@@ -203,6 +221,7 @@ class ScrapingController extends Controller
                 "success" => true,
                 "message" => $msg,
                 "stats" => $stats,
+                "skipped_details" => $skippedDetails,
             ]);
         } catch (ApiException $e) {
             errorResponse($e->getMessage(), $e->getStatus());
@@ -336,7 +355,8 @@ class ScrapingController extends Controller
                 "data" => [
                     "inserted" => $preview["inserted"],
                     "updated" => $preview["updated"],
-                    "stats" => $preview["stats"]
+                    "stats" => $preview["stats"],
+                    "skipped_details" => $preview["skipped_details"] ?? [],
                 ]
             ]);
         } catch (ApiException $e) {
@@ -364,6 +384,7 @@ class ScrapingController extends Controller
                 "inserted" => $preview["inserted"],
                 "updated" => $preview["updated"],
                 "stats" => $preview["stats"],
+                "skipped_details" => $preview["skipped_details"] ?? [],
             ];
 
             $this->render("scraping/preview_sync_authors", $data, "main");
@@ -738,12 +759,22 @@ class ScrapingController extends Controller
         $toInsert = [];
         $toUpdate = [];
         $skipped = 0;
+        $skippedDetails = [];
 
         foreach ($allAuthors as $sintaAuthor) {
-            $idSinta = isset($sintaAuthor["id_sinta"]) ? intval($sintaAuthor["id_sinta"]) : null;
+            $rawId = $sintaAuthor["id_sinta"] ?? null;
+            $idSinta = isset($rawId) ? intval($rawId) : null;
+            $fullname = (string) ($sintaAuthor["fullname"] ?? $sintaAuthor["nama"] ?? "-");
 
             if (!$idSinta) {
                 $skipped++;
+                $skippedDetails[] = [
+                    "fullname" => $fullname,
+                    "id_sinta" => $rawId,
+                    "reason" => $rawId === null || $rawId === ""
+                        ? "ID SINTA kosong (null)"
+                        : "ID SINTA tidak valid (" . var_export($rawId, true) . ")",
+                ];
                 continue;
             }
 
@@ -760,6 +791,11 @@ class ScrapingController extends Controller
                     ]);
                 } else {
                     $skipped++;
+                    $skippedDetails[] = [
+                        "fullname" => $fullname,
+                        "id_sinta" => $idSinta,
+                        "reason" => "Tidak ada perubahan data",
+                    ];
                 }
             } else {
                 $toInsert[] = $sintaAuthor;
@@ -773,6 +809,7 @@ class ScrapingController extends Controller
                 "total" => count($allAuthors),
                 "skipped" => $skipped,
             ],
+            "skipped_details" => $skippedDetails,
         ];
     }
 

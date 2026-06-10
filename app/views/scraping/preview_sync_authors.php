@@ -287,6 +287,40 @@
         </span>
       </div>
 
+      <?php $skippedList = $skipped_details ?? []; ?>
+      <?php if (!empty($skippedList)): ?>
+      <!-- Skipped Details Toggle -->
+      <div class="mb-3">
+        <button type="button" class="preview-btn secondary" data-bs-toggle="collapse" data-bs-target="#skippedDetails" aria-expanded="false" aria-controls="skippedDetails">
+          <i class="bi bi-eye"></i> Detail author yang di-skip (<?php echo count($skippedList); ?>)
+        </button>
+        <div class="collapse mt-2" id="skippedDetails">
+          <div class="table-container">
+            <table class="preview-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">No</th>
+                  <th>Nama</th>
+                  <th style="width: 180px;">ID SINTA</th>
+                  <th style="width: 280px;">Alasan di-skip</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($skippedList as $idx => $item): ?>
+                  <tr>
+                    <td><?php echo $idx + 1; ?></td>
+                    <td><?php echo htmlspecialchars((string) ($item['fullname'] ?? '-')); ?></td>
+                    <td class="text-muted"><?php echo htmlspecialchars((string) (is_null($item['id_sinta'] ?? null) ? 'null' : var_export($item['id_sinta'], true))); ?></td>
+                    <td><span class="preview-change-tag"><?php echo htmlspecialchars((string) ($item['reason'] ?? '-')); ?></span></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <?php endif; ?>
+
       <div id="syncAlert" class="preview-alert d-none"></div>
 
       <?php $hasChanges = !empty($inserted) || !empty($updated); ?>

@@ -1,9 +1,9 @@
 -- Frontend Database Schema
 -- Database: kp_penelitian_db (Display Database)
 
-CREATE DATABASE IF NOT EXISTS `kp_penelitian_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `kp-penelitian-db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE `kp_penelitian_db`;
+USE `kp-penelitian-db`;
 
 -- Table: users
 -- Stores user accounts (local password or Google OAuth)
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `articles` (
     `pdf_link` TEXT,
     `issn` VARCHAR(20),
     `issn_type` VARCHAR(20),
-    `indexed_date_time` DATETIME,
+    `indexed_date_time` VARCHAR(50),
     `indexed_date_parts` VARCHAR(50),
     `url` TEXT,
 
