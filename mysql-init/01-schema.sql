@@ -1,9 +1,9 @@
 -- Frontend Database Schema
--- Database: kp_penelitian_dosen (Display Database)
+-- Database: kp_penelitian_db (Display Database)
 
-CREATE DATABASE IF NOT EXISTS `kp_penelitian_dosen` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `kp_penelitian_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE `kp_penelitian_dosen`;
+USE `kp_penelitian_db`;
 
 -- Table: users
 -- Stores user accounts (local password or Google OAuth)

@@ -401,7 +401,7 @@
     <!-- Desktop User Menu -->
     <div class="navbar-user">
       <?php if (isset($user) && $user): ?>
-        <button class="navbar-user-toggle" onclick="toggleDropdown()" aria-expanded="false">
+        <button class="navbar-user-toggle" onclick="toggleDropdown(this)" aria-expanded="false">
           <i class="bi bi-person-circle"></i>
           <span class="user-name"><?php echo htmlspecialchars($user->full_name); ?></span>
           <i class="bi bi-chevron-down dropdown-arrow"></i>
@@ -432,9 +432,8 @@
   }
 
   // Desktop Dropdown Toggle
-  function toggleDropdown() {
+  function toggleDropdown(button) {
     const dropdown = document.getElementById('userDropdown');
-    const button = event.currentTarget;
     const isExpanded = button.getAttribute('aria-expanded') === 'true';
 
     button.setAttribute('aria-expanded', !isExpanded);
@@ -450,9 +449,9 @@
   // Close dropdown when clicking outside
   document.addEventListener('click', function(e) {
     const dropdown = document.getElementById('userDropdown');
-    const userToggle = document.querySelector('.navbar-user-toggle');
+    const userToggle = document.querySelector('.navbar-user > .navbar-user-toggle');
 
-    if (dropdown && !dropdown.contains(e.target) && !userToggle.contains(e.target)) {
+    if (dropdown && userToggle && !dropdown.contains(e.target) && !userToggle.contains(e.target)) {
       dropdown.classList.remove('show');
       userToggle.setAttribute('aria-expanded', 'false');
     }
